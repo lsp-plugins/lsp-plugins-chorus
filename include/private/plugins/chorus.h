@@ -22,8 +22,13 @@
 #ifndef PRIVATE_PLUGINS_CHORUS_H_
 #define PRIVATE_PLUGINS_CHORUS_H_
 
-#include <lsp-plug.in/dsp-units/util/Delay.h>
 #include <lsp-plug.in/dsp-units/ctl/Bypass.h>
+#include <lsp-plug.in/dsp-units/ctl/Toggle.h>
+#include <lsp-plug.in/dsp-units/misc/lfo.h>
+#include <lsp-plug.in/dsp-units/util/Delay.h>
+#include <lsp-plug.in/dsp-units/util/Oversampler.h>
+#include <lsp-plug.in/dsp-units/util/RingBuffer.h>
+#include <lsp-plug.in/plug-fw/core/IDBuffer.h>
 #include <lsp-plug.in/plug-fw/plug.h>
 #include <private/meta/chorus.h>
 
@@ -37,44 +42,45 @@ namespace lsp
         class chorus: public plug::Module
         {
             protected:
-                enum mode_t
-                {
-                    CD_MONO,
-                    CD_STEREO,
-                    CD_X2_STEREO
-                };
-
                 typedef struct channel_t
                 {
                     // DSP processing modules
-                    dspu::Delay         sLine;              // Delay line
-                    dspu::Bypass        sBypass;            // Bypass
+                    dspu::Bypass            sBypass;            // Bypass
+                    dspu::Delay             sDelay;             // Delay for dry signal
+                    dspu::RingBuffer        sRing;              // Ring buffer for flanger effect processing
+                    dspu::RingBuffer        sFeedback;          // Feedback delay buffer
+                    dspu::Oversampler       sOversampler;       // Oversampler
 
                     // Parameters
-                    ssize_t             nDelay;             // Actual delay of the signal
-                    float               fDryGain;           // Dry gain (unprocessed signal)
-                    float               fWetGain;           // Wet gain (processed signal)
+                    uint32_t                nOldPhaseShift;     // Old phase shift
+                    uint32_t                nPhaseShift;        // Phase shift
+                    uint32_t                nLfoType[2];        // Type of LFO (x, y)
+                    dspu::lfo::function_t   pXLfoFunc[2];       // LFO function (x, y)
+
+                    float                   *vIn;               // Input buffer
+                    float                   *vOut;              // Output buffer
+                    float                   *vBuffer;           // Processed signal
+                    float                   *vLfoMesh;          // LFO mesh amplitude data
 
                     // Input ports
-                    plug::IPort        *pIn;                // Input port
-                    plug::IPort        *pOut;               // Output port
-                    plug::IPort        *pDelay;             // Delay (in samples)
-                    plug::IPort        *pDry;               // Dry control
-                    plug::IPort        *pWet;               // Wet control
+                    plug::IPort             *pIn;               // Input port
+                    plug::IPort             *pOut;              // Output port
 
                     // Output ports
-                    plug::IPort        *pOutDelay;          // Output delay time
-                    plug::IPort        *pInLevel;           // Input signal level
-                    plug::IPort        *pOutLevel;          // Output signal level
+                    plug::IPort             *pPhase;            // Current phase
+                    plug::IPort             *pLfoType;          // Oscillator type
+                    plug::IPort             *pLfoPeriod;        // Oscillator period
+                    plug::IPort             *pLfoShift;         // LFO shift
+                    plug::IPort             *pLfoMesh;          // LFO mesh
+                    plug::IPort             *pInLevel;          // Input signal level
+                    plug::IPort             *pOutLevel;         // Output signal level
                 } channel_t;
 
             protected:
+                dspu::Toggle        sReset;             // Reset toggle
+
                 size_t              nChannels;          // Number of channels
                 channel_t          *vChannels;          // Delay channels
-                float              *vBuffer;            // Temporary buffer for audio processing
-
-                plug::IPort        *pBypass;            // Bypass
-                plug::IPort        *pGainOut;           // Output gain
 
                 uint8_t            *pData;              // Allocated data
 
@@ -96,7 +102,10 @@ namespace lsp
             public:
                 virtual void        update_sample_rate(long sr) override;
                 virtual void        update_settings() override;
+                virtual bool        set_position(const plug::position_t *pos) override;
                 virtual void        process(size_t samples) override;
+                virtual void        ui_activated() override;
+                virtual bool        inline_display(plug::ICanvas *cv, size_t width, size_t height) override;
                 virtual void        dump(dspu::IStateDumper *v) const override;
         };
 

@@ -1,7 +1,7 @@
 {
 	"chorus": {
-		"name": "Plugin Template",
-		"description": "TODO: write description"
+		"name": "Chorus",
+		"description": "This plugin allows to simulate the chorus effect"
 	}
 }
 

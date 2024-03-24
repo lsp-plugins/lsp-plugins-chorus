@@ -1,9 +1,11 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=TODO: Template Plugin
-GenericName=TODO: Template Plugin
-Comment=TODO: add description what plugin does
+Name=Chorus Stereo
+GenericName=Chorus
+GenericName[ru]=Хорус
+Comment=This tool allows to simulate the stereo chorus effect
+Comment[ru]=Устройство, позволяющее симулировать эффект хоруса для стереосигнала
 Exec=lsp-plugins-chorus-stereo
 Icon=lsp-plugins
 Terminal=false
