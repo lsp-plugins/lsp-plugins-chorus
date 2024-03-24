@@ -153,9 +153,7 @@ namespace lsp
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
             SWITCH("sync", "Tempo sync", 0.0f),
             COMBO("time", "Time computing method", 0, rate_type),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
-            COMBO("xtype", "Crossfade Type", 1, crossfade_type),
-            TRIGGER("reset", "Reset phase to initial"),
+            TRIGGER("reset", "Reset phase to initial value"),
 
             // LFO settings
             INT_CONTROL("voices", "Number of voices", U_NONE, chorus::VOICES),
@@ -224,8 +222,6 @@ namespace lsp
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
             SWITCH("sync", "Tempo sync", 0.0f),
             COMBO("time", "Time computing method", 0, rate_type),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
-            COMBO("xtype", "Crossfade Type", 1, crossfade_type),
             TRIGGER("reset", "Reset phase to initial"),
 
             // LFO settings
