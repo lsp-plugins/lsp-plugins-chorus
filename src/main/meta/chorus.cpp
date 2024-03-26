@@ -113,7 +113,7 @@ namespace lsp
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
             CONTROL_DFL("ld" id, "LFO delay" label, U_PERCENT, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lip" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
+            CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
         #define CHORUS_LFO_STEREO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
