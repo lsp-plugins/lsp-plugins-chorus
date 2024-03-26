@@ -53,8 +53,15 @@ namespace lsp
             { "Circular",               "chorus.osc.circular"               }, \
             { "Reverse Circular",       "chorus.osc.reverse_circular"       }
 
-        static const port_item_t osc_functions[] =
+        static const port_item_t osc1_functions[] =
         {
+            LFO_LIST,
+            { NULL, NULL }
+        };
+
+        static const port_item_t osc2_functions[] =
+        {
+            { "Same",                   "chorus.osc.same"                   }, \
             LFO_LIST,
             { NULL, NULL }
         };
@@ -100,22 +107,24 @@ namespace lsp
         //-------------------------------------------------------------------------
         // Plugin metadata
 
-        #define CHORUS_LFO_MONO(id, label, phase, delay) \
-            COMBO("lt" id, "LFO type" label, 0, osc_functions), \
+        #define CHORUS_LFO_MONO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
+            COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, 0, osc_periods), \
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
             CONTROL_DFL("ld" id, "LFO delay" label, U_PERCENT, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            MESH("lgr" id, "LFO graph" label, chorus::VOICES_MAX/2, chorus::LFO_MESH_SIZE)
+            CYC_CONTROL("lip" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
+            MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
-        #define CHORUS_LFO_STEREO(id, label, phase, delay) \
-            COMBO("lt" id, "LFO type" label, 0, osc_functions), \
+        #define CHORUS_LFO_STEREO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
+            COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, 0, osc_periods), \
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
             CONTROL_DFL("ld" id, "LFO delay" label, U_PERCENT, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lvp" id, "Voice inter-channel phase" label, U_DEG, chorus::VOICE_PHASE), \
-            MESH("lgr" id, "LFO graph" label, chorus::VOICES_MAX/2, chorus::LFO_MESH_SIZE)
+            CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
+            CYC_CONTROL("lcp" id, "Inter-channel phase" label, U_DEG, chorus::CHANNEL_PHASE), \
+            MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
         #define VOICE_METER_MONO(id, label) \
             METER("vmp" id, "Voice meter " label " phase", U_DEG, chorus::PHASE), \
@@ -140,12 +149,6 @@ namespace lsp
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
             AMP_GAIN10("amount", "The overall amount of the effect", GAIN_AMP_0_DB),
 
-            // Feedback chain
-            SWITCH("fb_on", "Feedback on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
-            SWITCH("fphase", "Feedback phase switch", 0.0f),
-
             // Tempo/rate controls
             CONTROL("rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
@@ -158,30 +161,17 @@ namespace lsp
             // LFO settings
             INT_CONTROL("voices", "Number of voices", U_NONE, chorus::VOICES),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("dmin", "Minimum delay", U_MSEC, chorus::LFO_PAD_DELAY),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),
             SWITCH("lfo2", "Enable second LFO", 0.0f),
-            CHORUS_LFO_MONO("_1", " 1", 0.0f, 5.0f),
-            CHORUS_LFO_MONO("_2", " 2", 180.0f, 15.0f),
+            CHORUS_LFO_MONO("_1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
+            CHORUS_LFO_MONO("_2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
 
-            // Voice meters
-            VOICE_METER_MONO("1", " 1"),
-            VOICE_METER_MONO("2", " 2"),
-            VOICE_METER_MONO("3", " 3"),
-            VOICE_METER_MONO("4", " 4"),
-            VOICE_METER_MONO("5", " 5"),
-            VOICE_METER_MONO("6", " 6"),
-            VOICE_METER_MONO("7", " 7"),
-            VOICE_METER_MONO("8", " 8"),
-            VOICE_METER_MONO("9", " 9"),
-            VOICE_METER_MONO("10", " 10"),
-            VOICE_METER_MONO("11", " 11"),
-            VOICE_METER_MONO("12", " 12"),
-            VOICE_METER_MONO("13", " 13"),
-            VOICE_METER_MONO("14", " 14"),
-            VOICE_METER_MONO("15", " 15"),
-            VOICE_METER_MONO("16", " 16"),
+            // Feedback chain
+            SWITCH("fb_on", "Feedback on", 0),
+            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            SWITCH("fphase", "Feedback phase switch", 0.0f),
 
             // Loudness control
             IN_GAIN,
@@ -189,6 +179,28 @@ namespace lsp
             WET_GAIN(1.0f),
             DRYWET(100.0f),
             OUT_GAIN,
+
+            // Voice meters
+            VOICE_METER_MONO("_1", " 1"),
+            VOICE_METER_MONO("_2", " 2"),
+            VOICE_METER_MONO("_3", " 3"),
+            VOICE_METER_MONO("_4", " 4"),
+            VOICE_METER_MONO("_5", " 5"),
+            VOICE_METER_MONO("_6", " 6"),
+            VOICE_METER_MONO("_7", " 7"),
+            VOICE_METER_MONO("_8", " 8"),
+            VOICE_METER_MONO("_9", " 9"),
+            VOICE_METER_MONO("_10", " 10"),
+            VOICE_METER_MONO("_11", " 11"),
+            VOICE_METER_MONO("_12", " 12"),
+            VOICE_METER_MONO("_13", " 13"),
+            VOICE_METER_MONO("_14", " 14"),
+            VOICE_METER_MONO("_15", " 15"),
+            VOICE_METER_MONO("_16", " 16"),
+
+            // Gain meters
+            METER_GAIN("min", "Input gain", GAIN_AMP_P_48_DB),
+            METER_GAIN("mout", "Output gain", GAIN_AMP_P_48_DB),
 
             PORTS_END
         };
@@ -209,12 +221,6 @@ namespace lsp
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
             AMP_GAIN10("amount", "The overall amount of the effect", GAIN_AMP_0_DB),
 
-            // Feedback chain
-            SWITCH("fb_on", "Feedback on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
-            SWITCH("fphase", "Feedback phase switch", 0.0f),
-
             // Tempo/rate controls
             CONTROL("rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
@@ -227,30 +233,17 @@ namespace lsp
             // LFO settings
             INT_CONTROL("voices", "Number of voices", U_NONE, chorus::VOICES),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("dmin", "Minimum delay", U_MSEC, chorus::LFO_PAD_DELAY),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),
             SWITCH("lfo2", "Enable second LFO", 0.0f),
-            CHORUS_LFO_STEREO("_1", " 1", 0.0f, 5.0f),
-            CHORUS_LFO_STEREO("_2", " 2", 180.0f, 15.0f),
+            CHORUS_LFO_STEREO("_1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
+            CHORUS_LFO_STEREO("_2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
 
-            // Voice meters
-            VOICE_METER_STEREO("1", " 1"),
-            VOICE_METER_STEREO("2", " 2"),
-            VOICE_METER_STEREO("3", " 3"),
-            VOICE_METER_STEREO("4", " 4"),
-            VOICE_METER_STEREO("5", " 5"),
-            VOICE_METER_STEREO("6", " 6"),
-            VOICE_METER_STEREO("7", " 7"),
-            VOICE_METER_STEREO("8", " 8"),
-            VOICE_METER_STEREO("9", " 9"),
-            VOICE_METER_STEREO("10", " 10"),
-            VOICE_METER_STEREO("11", " 11"),
-            VOICE_METER_STEREO("12", " 12"),
-            VOICE_METER_STEREO("13", " 13"),
-            VOICE_METER_STEREO("14", " 14"),
-            VOICE_METER_STEREO("15", " 15"),
-            VOICE_METER_STEREO("16", " 16"),
+            // Feedback chain
+            SWITCH("fb_on", "Feedback on", 0),
+            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            SWITCH("fphase", "Feedback phase switch", 0.0f),
 
             // Loudness control
             IN_GAIN,
@@ -258,6 +251,30 @@ namespace lsp
             WET_GAIN(1.0f),
             DRYWET(100.0f),
             OUT_GAIN,
+
+            // Voice meters
+            VOICE_METER_STEREO("_1", " 1"),
+            VOICE_METER_STEREO("_2", " 2"),
+            VOICE_METER_STEREO("_3", " 3"),
+            VOICE_METER_STEREO("_4", " 4"),
+            VOICE_METER_STEREO("_5", " 5"),
+            VOICE_METER_STEREO("_6", " 6"),
+            VOICE_METER_STEREO("_7", " 7"),
+            VOICE_METER_STEREO("_8", " 8"),
+            VOICE_METER_STEREO("_9", " 9"),
+            VOICE_METER_STEREO("_10", " 10"),
+            VOICE_METER_STEREO("_11", " 11"),
+            VOICE_METER_STEREO("_12", " 12"),
+            VOICE_METER_STEREO("_13", " 13"),
+            VOICE_METER_STEREO("_14", " 14"),
+            VOICE_METER_STEREO("_15", " 15"),
+            VOICE_METER_STEREO("_16", " 16"),
+
+            // Gain meters
+            METER_GAIN("min_l", "Input gain left",  GAIN_AMP_P_48_DB),
+            METER_GAIN("mout_l", "Output gain left",  GAIN_AMP_P_48_DB),
+            METER_GAIN("min_r", "Input gain right",  GAIN_AMP_P_48_DB),
+            METER_GAIN("mout_r", "Output gain right", GAIN_AMP_P_48_DB),
 
             PORTS_END
         };

@@ -88,18 +88,18 @@ namespace lsp
             static constexpr float  VOICE_PHASE_DFL     = 180.0f;
             static constexpr float  VOICE_PHASE_STEP    = 0.04f;
 
-            static constexpr float  LFO_PAD_DELAY_MIN   = 0.1f;
-            static constexpr float  LFO_PAD_DELAY_MAX   = 10.0f;
-            static constexpr float  LFO_PAD_DELAY_DFL   = 1.0f;
-            static constexpr float  LFO_PAD_DELAY_STEP  = 0.001f;
+            static constexpr float  CHANNEL_PHASE_MIN   = 0.0f;
+            static constexpr float  CHANNEL_PHASE_MAX   = 360.0f;
+            static constexpr float  CHANNEL_PHASE_DFL   = 180.0f;
+            static constexpr float  CHANNEL_PHASE_STEP  = 0.04f;
 
-            static constexpr float  LFO_DELAY_MIN       = 0.0f;
+            static constexpr float  LFO_DELAY_MIN       = 0.1f;
             static constexpr float  LFO_DELAY_MAX       = 20.0f;
-            static constexpr float  LFO_DELAY_DFL       = 0.0f;
+            static constexpr float  LFO_DELAY_DFL       = 5.0f;
             static constexpr float  LFO_DELAY_STEP      = 0.001f;
 
             static constexpr float  MTR_VOICE_DELAY_MIN = 0.0f;
-            static constexpr float  MTR_VOICE_DELAY_MAX = LFO_PAD_DELAY_MAX + LFO_DELAY_MAX + DEPTH_MAX * 0.5f;
+            static constexpr float  MTR_VOICE_DELAY_MAX = LFO_DELAY_MAX + DEPTH_MAX;
             static constexpr float  MTR_VOICE_DELAY_DFL = 0.0f;
             static constexpr float  MTR_VOICE_DELAY_STEP= 0.01f;
 
@@ -115,6 +115,13 @@ namespace lsp
 
             static constexpr size_t LFO_MESH_SIZE       = 361;
             static constexpr size_t OVERSAMPLING_MAX    = 8;
+
+            enum osc_period_t
+            {
+                OSC_FULL,
+                OSC_FIRST,
+                OSC_LAST
+            };
 
         } chorus;
 

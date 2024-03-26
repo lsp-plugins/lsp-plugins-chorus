@@ -33,10 +33,9 @@ namespace lsp
     namespace plugins
     {
         static constexpr size_t     BUFFER_SIZE             = 0x600;
-//        static constexpr uint32_t   PHASE_MAX               = 0x80000000;
+        static constexpr uint32_t   PHASE_MAX               = 0x80000000;
 //        static constexpr uint32_t   PHASE_MASK              = PHASE_MAX - 1;
 //        static constexpr float      PHASE_COEFF             = 1.0f / float(PHASE_MAX);
-
 
         //---------------------------------------------------------------------
         // Plugin factory
@@ -55,20 +54,130 @@ namespace lsp
 
         //---------------------------------------------------------------------
         // Implementation
+
+        dspu::lfo::function_t chorus::all_lfo_functions[] =
+        {
+            dspu::lfo::triangular,
+            dspu::lfo::sine,
+            dspu::lfo::step_sine,
+            dspu::lfo::cubic,
+            dspu::lfo::step_cubic,
+            dspu::lfo::parabolic,
+            dspu::lfo::rev_parabolic,
+            dspu::lfo::logarithmic,
+            dspu::lfo::rev_logarithmic,
+            dspu::lfo::sqrt,
+            dspu::lfo::rev_sqrt,
+            dspu::lfo::circular,
+            dspu::lfo::rev_circular
+        };
+
+        dspu::over_mode_t chorus::all_oversampling_modes[] =
+        {
+            dspu::over_mode_t::OM_NONE,
+            dspu::over_mode_t::OM_LANCZOS_2X16BIT,
+            dspu::over_mode_t::OM_LANCZOS_2X24BIT,
+            dspu::over_mode_t::OM_LANCZOS_3X16BIT,
+            dspu::over_mode_t::OM_LANCZOS_3X24BIT,
+            dspu::over_mode_t::OM_LANCZOS_4X16BIT,
+            dspu::over_mode_t::OM_LANCZOS_4X24BIT,
+            dspu::over_mode_t::OM_LANCZOS_6X16BIT,
+            dspu::over_mode_t::OM_LANCZOS_6X24BIT,
+            dspu::over_mode_t::OM_LANCZOS_8X16BIT,
+            dspu::over_mode_t::OM_LANCZOS_8X24BIT
+        };
+
         chorus::chorus(const meta::plugin_t *meta):
             Module(meta)
         {
             // Compute the number of audio channels by the number of inputs
-            nChannels       = 0;
+            nChannels           = 0;
+            nLfo                = 0;
             for (const meta::port_t *p = meta->ports; p->id != NULL; ++p)
                 if (meta::is_audio_in_port(p))
                     ++nChannels;
 
+            // Cleanup data
+            vChannels           = NULL;
+            vVoices             = NULL;
+
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo          = &vLfo[i];
+
+                lfo->nType          = -1;
+                lfo->nPeriod        = -1;
+                lfo->fOverlap       = 0.0f;
+                lfo->fDelay         = 0.0f;
+                lfo->nInitPhase     = 0.0f;
+                lfo->fIVoicePhase   = 0.0f;
+                lfo->fIChannelPhase = 0;
+
+                lfo->nVoices        = 0;
+                lfo->bSyncMesh      = 0;
+                lfo->pFunc          = NULL;
+                lfo->vLfoMesh       = NULL;
+                lfo->vVoices        = NULL;
+
+                lfo->pType          = NULL;
+                lfo->pPeriod        = NULL;
+                lfo->pOverlap       = NULL;
+                lfo->pDelay         = NULL;
+                lfo->pInitPhase     = NULL;
+                lfo->pIVoicePhase   = NULL;
+                lfo->pIChannelPhase = NULL;
+                lfo->pMesh          = NULL;
+            }
+
+            vBuffer             = NULL;
+            vLfoPhase           = NULL;
+
+            nPhase              = 0;
+            nVoices             = 0;
+            fDepth              = 0.0f;
+            fRate               = 0.0f;
+            fInGain             = GAIN_AMP_0_DB;
+            fDryGain            = GAIN_AMP_M_6_DB;
+            fWetGain            = GAIN_AMP_M_6_DB;
+            fAmount             = GAIN_AMP_0_DB;
+
+            bMS                 = false;
+            bMono               = false;
+
+            // Cleanup pointers to ports
+            pBypass             = NULL;
+            pMono               = NULL;
+            pMS                 = NULL;
+            pInvPhase           = NULL;
+            pOversampling       = NULL;
+            pAmount             = NULL;
+
+            pRate               = NULL;
+            pFraction           = NULL;
+            pTempo              = NULL;
+            pTempoSync          = NULL;
+            pTimeMode           = NULL;
+            pReset              = NULL;
+
+            pVoices             = NULL;
+            pDepth              = NULL;
+            pCrossfade          = NULL;
+            pCrossfadeType      = NULL;
+            pLfo2Enable         = NULL;
+
+            pFeedOn             = NULL;
+            pFeedGain           = NULL;
+            pFeedDelay          = NULL;
+            pFeedPhase          = NULL;
+
+            pInGain             = NULL;
+            pDryGain            = NULL;
+            pWetGain            = NULL;
+            pDryWet             = NULL;
+            pOutGain            = NULL;
+
             // Initialize other parameters
-            vChannels       = NULL;
-
-
-            pData           = NULL;
+            pData               = NULL;
         }
 
         chorus::~chorus()
@@ -82,19 +191,173 @@ namespace lsp
             Module::init(wrapper, ports);
 
             // Estimate the number of bytes to allocate
+            size_t max_voices       = nChannels * meta::chorus::VOICES_MAX;
             size_t szof_channels    = align_size(sizeof(channel_t) * nChannels, OPTIMAL_ALIGN);
+            size_t szof_voices      = align_size(sizeof(voice_t) * max_voices, OPTIMAL_ALIGN);
             size_t buf_sz           = BUFFER_SIZE * sizeof(float);
-            size_t alloc            = szof_channels + buf_sz;
+            size_t mesh_buf_sz      = align_size(meta::chorus::LFO_MESH_SIZE * sizeof(float), OPTIMAL_ALIGN);
+            size_t to_alloc         =
+                szof_channels +         // vChannels
+                szof_voices +           // vVoices
+                buf_sz +                // vBuffer
+                mesh_buf_sz +           // vLfoPhase
+                2 * mesh_buf_sz +       // lfo_t::vBuffer
+                nChannels * buf_sz;     // channel_t::vBuffer
 
             // Allocate memory-aligned data
-            uint8_t *ptr            = alloc_aligned<uint8_t>(pData, alloc, OPTIMAL_ALIGN);
+            uint8_t *ptr            = alloc_aligned<uint8_t>(pData, to_alloc, OPTIMAL_ALIGN);
             if (ptr == NULL)
                 return;
+            lsp_guard_assert(uint8_t *save   = ptr);
 
             // Initialize pointers to channels and temporary buffer
             vChannels               = advance_ptr_bytes<channel_t>(ptr, szof_channels);
+            vVoices                 = advance_ptr_bytes<voice_t>(ptr, szof_voices);
+            vBuffer                 = advance_ptr_bytes<float>(ptr, buf_sz);
+            vLfoPhase               = advance_ptr_bytes<float>(ptr, mesh_buf_sz);
 
-            // TODO
+            // Initialize channels
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c            = &vChannels[i];
+
+                c->sBypass.construct();
+                c->sDelay.construct();
+                c->sRing.construct();
+                c->sFeedback.construct();
+                c->sOversampler.construct();
+
+                c->vBuffer              = advance_ptr_bytes<float>(ptr, buf_sz);
+
+                c->vIn                  = NULL;
+                c->vOut                 = NULL;
+                c->vBuffer              = NULL;
+
+                c->pIn                  = NULL;
+                c->pOut                 = NULL;
+            }
+
+            // Initialize LFO
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo              = &vLfo[i];
+                lfo->vLfoMesh           = advance_ptr_bytes<float>(ptr, mesh_buf_sz);
+            }
+
+            // Initialize voices
+            for (size_t i=0; i< max_voices; ++i)
+            {
+                voice_t *v              = &vVoices[i];
+
+                v->nPhase               = 0;
+                v->fDelay               = 0;
+                v->fDepth               = 0;
+                v->fNormShift           = 0;
+                v->fNormScale           = 0;
+
+                v->pPhase               = NULL;
+                v->pShift               = NULL;
+                v->pDelay               = NULL;
+            }
+            lsp_assert(ptr <= &save[to_alloc]);
+
+            // Bind ports
+            size_t port_id      = 0;
+
+            // Bind I/O ports
+            lsp_trace("Binding I/O ports");
+            for (size_t i=0; i<nChannels; ++i)
+                BIND_PORT(vChannels[i].pIn);
+            for (size_t i=0; i<nChannels; ++i)
+                BIND_PORT(vChannels[i].pOut);
+
+            // Bind bypass
+            lsp_trace("Binding bypass ports");
+            BIND_PORT(pBypass);
+
+            // Operating modes
+            lsp_trace("Binding operating modes");
+            if (nChannels > 1)
+            {
+                BIND_PORT(pMono);              // Mono compatibility test
+                BIND_PORT(pMS);                // Mid/Side switch
+            }
+            BIND_PORT(pInvPhase);
+            BIND_PORT(pOversampling);
+            BIND_PORT(pAmount);
+
+            // Tempo/rate controls
+            lsp_trace("Binding tempo/rate controls");
+            BIND_PORT(pRate);
+            BIND_PORT(pFraction);
+            SKIP_PORT("Denominator");   // Skip denominator
+            BIND_PORT(pTempo);
+            BIND_PORT(pTempoSync);
+            BIND_PORT(pTimeMode);
+            BIND_PORT(pReset);
+
+            // LFO settings
+            lsp_trace("Binding LFO settings");
+            BIND_PORT(pVoices);
+            BIND_PORT(pDepth);
+            BIND_PORT(pCrossfade);
+            BIND_PORT(pCrossfadeType);
+            BIND_PORT(pLfo2Enable);
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo          = &vLfo[i];
+
+                BIND_PORT(lfo->pType);
+                BIND_PORT(lfo->pPeriod);
+                BIND_PORT(lfo->pOverlap);
+                BIND_PORT(lfo->pDelay);
+                BIND_PORT(lfo->pInitPhase);
+                BIND_PORT(lfo->pIVoicePhase);
+                if (nChannels > 1)
+                    BIND_PORT(lfo->pIChannelPhase);
+                BIND_PORT(lfo->pMesh);
+            }
+
+            // Feedback settings
+            lsp_trace("Binding feedback settings");
+            BIND_PORT(pFeedOn);
+            BIND_PORT(pFeedGain);
+            BIND_PORT(pFeedDelay);
+            BIND_PORT(pFeedPhase);
+
+            // Loudness control settings
+            lsp_trace("Binding loudness control settings");
+            BIND_PORT(pInGain);
+            BIND_PORT(pDryGain);
+            BIND_PORT(pWetGain);
+            BIND_PORT(pDryWet);
+            BIND_PORT(pOutGain);
+
+            // Bind voice meters
+            lsp_trace("Binding voice meters");
+            for (size_t i=0; i<max_voices; ++i)
+            {
+                voice_t *v          = &vVoices[i];
+
+                BIND_PORT(v->pPhase);
+                BIND_PORT(v->pShift);
+                BIND_PORT(v->pDelay);
+            }
+
+            // Bind signal meters
+            lsp_trace("Binding signal meters");
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c        = &vChannels[i];
+
+                BIND_PORT(c->pInLevel);
+                BIND_PORT(c->pOutLevel);
+            }
+
+            // Fill LFO phase data
+            float phase_k           = 360.0f / (meta::chorus::LFO_MESH_SIZE - 1);
+            for (size_t i=0; i<meta::chorus::LFO_MESH_SIZE; ++i)
+                vLfoPhase[i]            = i * phase_k;
         }
 
         void chorus::destroy()
@@ -111,11 +374,17 @@ namespace lsp
                 for (size_t i=0; i<nChannels; ++i)
                 {
                     channel_t *c    = &vChannels[i];
+
                     c->sBypass.destroy();
-                    // TODO
+                    c->sDelay.destroy();
+                    c->sRing.destroy();
+                    c->sFeedback.destroy();
+                    c->sOversampler.destroy();
                 }
                 vChannels   = NULL;
             }
+
+            vVoices     = NULL;
 
             // Free previously allocated data chunk
             if (pData != NULL)
@@ -130,8 +399,259 @@ namespace lsp
             plug::Module::update_sample_rate(sr);
         }
 
+        inline uint32_t chorus::phase_to_int(float phase)
+        {
+            return float(PHASE_MAX) * (phase / 360.0f);
+        }
+
+        inline float chorus::lerp(float o_value, float n_value, float k)
+        {
+            return o_value + (n_value - o_value) * k;
+        }
+
+        inline float chorus::qlerp(float o_value, float n_value, float k)
+        {
+            return o_value * sqrtf(1.0f - k) + n_value * sqrtf(k);
+        }
+
+        inline int32_t chorus::ilerp(int32_t o_value, int32_t n_value, float k)
+        {
+            return o_value + (n_value - o_value) * k;
+        }
+
         void chorus::update_settings()
         {
+            // Update oversampling settings
+            dspu::over_mode_t omode = all_oversampling_modes[size_t(pOversampling->value())];
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c            = &vChannels[i];
+
+                if (c->sOversampler.mode() != omode)
+                {
+                    c->sOversampler.set_mode(omode);
+                    c->sOversampler.set_filtering(false);
+                    c->sOversampler.update_settings();
+
+                    c->sDelay.set_delay(c->sOversampler.latency());
+                    c->sDelay.clear();
+                    c->sRing.clear();
+                    c->sFeedback.clear();
+                }
+            }
+            size_t oversampling     = vChannels[0].sOversampler.get_oversampling();
+            size_t latency          = vChannels[0].sOversampler.latency();
+
+            // Update state of the 'reset' trigger
+            sReset.submit(pReset->value());
+
+            // Pre-compute several attributes
+            bool update_voices      = false;
+            const float in_gain     = pInGain->value();
+            const float out_gain    = pOutGain->value();
+            const bool bypass       = pBypass->value() >= 0.5f;
+            const size_t srate      = fSampleRate * oversampling;
+//            bool fb_on              = pFeedOn->value() >= 0.5f;
+//            float feed_gain         = (fb_on) ? pFeedGain->value() : 0.0f;
+            const float amount_gain = pAmount->value();
+            const bool mid_side     = (pMS != NULL) ? pMS->value() >= 0.5f : false;
+//            float crossfade         = pCrossfade->value() * 0.01f;
+
+            // Compute LFO rate
+            float rate              = pRate->value();
+            if (pTimeMode->value() >= 1.0f)
+            {
+                // Use tempo instead of rate
+                float tempo             = (pTempoSync->value() >= 0.5f) ? pWrapper->position()->beatsPerMinute : pTempo->value();
+                rate                    =
+                    lsp_limit(
+                        dspu::time_signature_to_frequency(pFraction->value(), tempo),
+                        meta::chorus::RATE_MIN,
+                        meta::chorus::RATE_MAX);
+            }
+            rate                   /= srate;
+            if (fRate != rate)
+                update_voices           = true;
+
+            // Update common parameters
+            const float dry_gain    = pDryGain->value();
+            const float wet_gain    = pWetGain->value();
+            const float drywet      = pDryWet->value() * 0.01f;
+
+            fInGain                 = in_gain;
+            fDryGain                = (dry_gain * drywet + 1.0f - drywet) * out_gain;
+            fWetGain                = wet_gain * drywet * out_gain;
+            fAmount                 = (pInvPhase->value() >= 0.5f) ? -amount_gain : amount_gain;
+
+            // LFO setup
+            const size_t n_lfo      = (pLfo2Enable->value() >= 0.5f) ? 2 : 1;
+            const size_t voices     = pVoices->value();
+            const float depth       = pDepth->value();
+            if (depth != fDepth)
+            {
+                update_voices           = true;
+                fDepth                  = depth;
+            }
+
+            // Re-allocate voices if number of LFOs has changed
+            if ((n_lfo != nLfo) || (voices != nVoices))
+            {
+                if (n_lfo == 2)
+                {
+                    lfo_t *lfo1             = &vLfo[0];
+                    lfo_t *lfo2             = &vLfo[1];
+                    lfo1->vVoices           = &vVoices[0];
+                    lfo2->vVoices           = &vVoices[(nChannels * meta::chorus::VOICES_MAX) / 2];
+                    lfo2->nVoices           = voices/2;
+                    lfo1->nVoices           = voices - lfo2->nVoices;
+                    lfo1->bSyncMesh         = true;
+                    lfo2->bSyncMesh         = true;
+                }
+                else
+                {
+                    lfo_t *lfo              = &vLfo[0];
+                    lfo->vVoices            = vVoices;
+                    lfo->nVoices            = voices;
+                    lfo->bSyncMesh          = true;
+                }
+
+                nLfo                    = n_lfo;
+                nVoices                 = voices;
+                update_voices           = true;
+            }
+
+            // Check that LFO parameters have changed
+            for (size_t i=0; i<n_lfo; ++i)
+            {
+                lfo_t *lfo              = &vLfo[i];
+                const float iv_phase    = lfo->pIVoicePhase->value();
+                const float ichan_phase = (lfo->pIChannelPhase != NULL) ? lfo->pIChannelPhase->value() : 0.0f;
+                const float overlap     = lfo->pOverlap->value() * 0.01f;
+                const float delay       = lfo->pDelay->value();
+
+                if (lfo->fOverlap != overlap)
+                {
+                    lfo->fOverlap           = overlap;
+                    update_voices           = true;
+                    lfo->bSyncMesh          = true;
+                }
+
+                if ((lfo->fIVoicePhase != iv_phase) ||
+                    (lfo->fIChannelPhase != ichan_phase) ||
+                    (lfo->fDelay != delay))
+                {
+                    lfo->fIVoicePhase       = iv_phase;
+                    lfo->fIChannelPhase     = ichan_phase;
+                    lfo->fDelay             = delay;
+
+                    update_voices           = true;
+                }
+            }
+
+            // Update voices if required
+            if (update_voices)
+            {
+                for (size_t i=0; i<nLfo; ++i)
+                {
+                    lfo_t *lfo              = &vLfo[i];
+                    const float step        = lfo->fIVoicePhase / float(lfo->nVoices);
+                    const float ovl_width   = lerp(1.0f / lfo->nVoices, 1.0f, lfo->fOverlap);
+                    const float ovl_step    = (lfo->nVoices > 1) ? (1.0f - ovl_width) / (lfo->nVoices - 1) : 0.0f;
+                    const float ovl_scale   = dspu::millis_to_samples(srate, fDepth * ovl_width);
+                    voice_t *v              = lfo->vVoices;
+
+                    for (size_t j=0; j<nChannels; ++j)
+                    {
+                        const float phase       = lfo->fIChannelPhase * j;
+
+                        for (size_t k=0; k<lfo->nVoices; ++k, ++v)
+                        {
+                            v->nPhase               = phase_to_int(phase + step * k);
+                            v->fNormShift           = k * ovl_step;
+                            v->fNormScale           = ovl_width;
+                            v->fDelay               = dspu::millis_to_samples(srate, lfo->fDelay + ovl_step * fDepth);
+                            v->fDepth               = ovl_scale;
+                        }
+                    }
+                }
+            }
+
+            // Update LFO settings
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo              = &vLfo[i];
+
+                // Update LFO preferences
+                size_t lfo_type         = size_t(lfo->pType->value());
+                size_t lfo_period       = size_t(lfo->pPeriod->value());
+                if (i > 0)
+                {
+                    if (lfo_type == 0)
+                    {
+                        lfo_type                = vLfo[0].nType;
+                        lfo_period              = vLfo[0].nPeriod;
+                    }
+                    else
+                        --lfo_type;
+                }
+
+                // The form of the LFO has changed?
+                if ((lfo_type != lfo->nType) || (lfo_period != lfo->nPeriod))
+                {
+                    lfo->nType              = lfo_type;
+                    lfo->nPeriod            = lfo_period;
+                    lfo->pFunc              = all_lfo_functions[lfo_type];
+                    lfo->bSyncMesh          = true;
+
+                    // Select the function coefficients
+                    switch (lfo_period)
+                    {
+                        case meta::chorus::OSC_FIRST:
+                            lfo->fArg[0]        = 0.5f;
+                            lfo->fArg[1]        = 0.0f;
+                            break;
+                        case meta::chorus::OSC_LAST:
+                            lfo->fArg[0]        = 0.5f;
+                            lfo->fArg[1]        = 0.5f;
+                            break;
+                        case meta::chorus::OSC_FULL:
+                        default:
+                            lfo->fArg[0]        = 1.0f;
+                            lfo->fArg[1]        = 0.0f;
+                            break;
+                    }
+
+                    // Update LFO image
+                    float k                 = lfo->fArg[0] / (meta::chorus::LFO_MESH_SIZE - 1);
+                    for (size_t j=0; j<meta::chorus::LFO_MESH_SIZE; ++j)
+                        lfo->vLfoMesh[j]        = lfo->pFunc(j * k + lfo->fArg[1]);
+                }
+
+                // Store the parameters for each processor
+                lfo->nInitPhase         = phase_to_int(lfo->pInitPhase->value());
+            }
+
+            // Update channels
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c    = &vChannels[i];
+
+                // For Mid/Side switch change, clear the buffers
+                if (mid_side != bMS)
+                {
+                    c->sRing.clear();
+                    c->sFeedback.clear();
+                }
+
+                // Update bypass
+                c->sBypass.set_bypass(bypass);
+            }
+
+            bMS                     = mid_side;
+            bMono                   = (pMono != NULL) ? pMono->value() >= 0.5f : false;
+
+            // Update latency
+            set_latency(latency);
         }
 
         bool chorus::set_position(const plug::position_t *pos)
@@ -141,11 +661,73 @@ namespace lsp
 
         void chorus::process(size_t samples)
         {
+            // Reset phase if phase request is pending
+            if (sReset.pending())
+            {
+                nPhase                  = 0;
+                for (size_t i=0; i<nChannels; ++i)
+                {
+                    channel_t *c            = &vChannels[i];
+                    c->sRing.clear();
+                    c->sFeedback.clear();
+                }
+                sReset.commit();
+            }
+
+            // Perform the routing
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c            = &vChannels[i];
+                c->vIn                  = c->pIn->buffer<float>();
+                c->vOut                 = c->pOut->buffer<float>();
+
+                // Measure the input level
+                c->pInLevel->set_value(dsp::abs_max(c->vIn, samples) * fInGain);
+            }
+
+            // Output information about phase for each channel
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo              = &vLfo[i];
+                if (!lfo->bSyncMesh)
+                    continue;
+
+                // Need to synchronize LFO mesh?
+                plug::mesh_t *mesh      = (lfo->pMesh != NULL) ? lfo->pMesh->buffer<plug::mesh_t>() : NULL;
+                if ((mesh != NULL) && (mesh->isEmpty()))
+                {
+                    if (i < nLfo)
+                    {
+                        dsp::copy(mesh->pvData[0], vLfoPhase, meta::chorus::LFO_MESH_SIZE);
+
+                        for (size_t j=0; j<lfo->nVoices; ++j)
+                        {
+                            const voice_t *v    = &lfo->vVoices[j];
+                            dsp::mul_k3(mesh->pvData[j+1], lfo->vLfoMesh, v->fNormScale, meta::chorus::LFO_MESH_SIZE);
+                            dsp::add_k2(mesh->pvData[j+1], v->fNormShift, meta::chorus::LFO_MESH_SIZE);
+                        }
+
+                        mesh->data(lfo->nVoices + 1, meta::chorus::LFO_MESH_SIZE);
+                    }
+                    else
+                        mesh->data(0, 0);
+
+                    lfo->bSyncMesh      = false;
+                }
+            }
+
+            // Request the inline display for redraw
+            if (pWrapper != NULL)
+                pWrapper->query_display_draw();
         }
 
         void chorus::ui_activated()
         {
-            // TODO
+            for (size_t i=0; i<2; ++i)
+            {
+                lfo_t *lfo              = &vLfo[i];
+                lfo->bSyncMesh          = true;
+            }
         }
 
         bool chorus::inline_display(plug::ICanvas *cv, size_t width, size_t height)
