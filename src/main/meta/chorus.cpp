@@ -127,9 +127,10 @@ namespace lsp
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
         #define VOICE_METER_MONO(id, label) \
-            METER("vmp" id, "Voice meter " label " phase", U_DEG, chorus::PHASE), \
-            METER("vms" id, "Voice meter " label " shift", U_NONE, chorus::SHIFT), \
-            METER("vmd" id, "Voice meter " label " delay", U_MSEC, chorus::MTR_VOICE_DELAY)
+            METER("vmp" id, "Voice meter" label " phase", U_DEG, chorus::PHASE), \
+            METER("vms" id, "Voice meter" label " shift", U_NONE, chorus::SHIFT), \
+            METER("vmd" id, "Voice meter" label " delay", U_MSEC, chorus::MTR_VOICE_DELAY), \
+            METER_MINMAX("vml" id, "Voice meter " label " LFO", U_NONE, 0.0f, 2.0f)
 
         #define VOICE_METER_STEREO(id, label) \
             VOICE_METER_MONO(id "l", label " left"), \

@@ -68,32 +68,46 @@
 							color.a="0.5"
 							hcolor.a="0.5" />
 		
-						<ui:for id="i" first="1" count="16">
-							<ui:if test="!(ex :in_r)">
-								<marker v=":vmp${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-							</ui:if>
-							<ui:if test="ex :in_r">
-								<marker v=":vmp${i}_l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-								<marker v=":vmp${i}_r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-							</ui:if>
-						</ui:for>
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65"
+									visibility=":vml_${i} ieq 1" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}l" ox="1" oy="0"
+									color="(:ms) ? 'mid' : 'left'" color.a="0.65"
+									visibility=":vml_${i}l ieq 1" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}r" ox="1" oy="0"
+									color="(:ms) ? 'side' : 'right'" color.a="0.65"
+									visibility=":vml_${i}r ieq 1" />
+							</ui:for>
+						</ui:if>
 						
 						<!-- Dots -->
-						<ui:for id="i" first="1" count="16">
-							<ui:if test="!(ex :in_r)">
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
 								<dot x.id="vms_${i}" y.id="vmp_${i}" color="graph_mesh" bcolor="graph_mesh"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-							</ui:if>
-							<ui:if test="ex :in_r">
-								<marker v=":vmp${i}_l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-								<marker v=":vmp${i}_r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65"
-									visibility="(!:lfo2) or (${:i mod 2 == 1})" />
-							</ui:if>
-						</ui:for>
+									visibility=":vml_${i} ieq 1" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}l" y.id="vms_${i}l"
+									color="(:ms) ? 'mid' : 'left'"
+									bcolor="(:ms) ? 'mid' : 'left'"
+									visibility=":vml_${i}l ieq 1" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}r" y.id="vms_${i}r"
+									color="(:ms) ? 'side' : 'right'"
+									bcolor="(:ms) ? 'side' : 'right'"
+									visibility=":vml_${i}r ieq 1" />
+							</ui:for>
+						</ui:if>
 		
 						<!-- text -->
 						<text x="0" y="0" halign="1" valign="-1" text="graph.values.min" />
@@ -166,32 +180,46 @@
 							color.a="0.5"
 							hcolor.a="0.5" />
 		
-						<ui:for id="i" first="2" count="8" step="2">
-							<ui:if test="!(ex :in_r)">
-								<marker v=":vmp${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65"
-									visibility=":lfo2" />
-							</ui:if>
-							<ui:if test="ex :in_r">
-								<marker v=":vmp${i}_l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65"
-									visibility=":lfo2" />
-								<marker v=":vmp${i}_r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65"
-									visibility=":lfo2" />
-							</ui:if>
-						</ui:for>
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65"
+									visibility=":vml_${i} ieq 2" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}l" ox="1" oy="0"
+									color="(:ms) ? 'mid' : 'left'" color.a="0.65"
+									visibility=":vml_${i}l ieq 2" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}r" ox="1" oy="0"
+									color="(:ms) ? 'side' : 'right'" color.a="0.65"
+									visibility=":vml_${i}r ieq 2" />
+							</ui:for>
+						</ui:if>
 						
 						<!-- Dots -->
-						<ui:for id="i" first="2" count="8" step="2">
-							<ui:if test="!(ex :in_r)">
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
 								<dot x.id="vms_${i}" y.id="vmp_${i}" color="graph_mesh" bcolor="graph_mesh"
-									visibility=":lfo2" />
-							</ui:if>
-							<ui:if test="ex :in_r">
-								<marker v=":vmp${i}_l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65"
-									visibility=":lfo2" />
-								<marker v=":vmp${i}_r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65"
-									visibility=":lfo2" />
-							</ui:if>
-						</ui:for>
+									visibility=":vml_${i} ieq 2" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}l" y.id="vms_${i}l"
+									color="(:ms) ? 'mid' : 'left'"
+									bcolor="(:ms) ? 'mid' : 'left'"
+									visibility=":vml_${i}l ieq 2" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}r" y.id="vms_${i}r"
+									color="(:ms) ? 'side' : 'right'"
+									bcolor="(:ms) ? 'side' : 'right'"
+									visibility=":vml_${i}r ieq 2" />
+							</ui:for>
+						</ui:if>
 		
 						<!-- text -->
 						<text x="0" y="0" halign="1" valign="-1" text="graph.values.min" />

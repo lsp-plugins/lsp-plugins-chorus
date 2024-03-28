@@ -42,18 +42,23 @@ namespace lsp
         class chorus: public plug::Module
         {
             protected:
+                typedef float (*mix_func_t)(float o_value, float n_value, float k);
 
                 typedef struct voice_t
                 {
                     uint32_t                nPhase;             // Phase shift relative to global LFO
-                    float                   fDelay;             // Delay shift in samples
-                    float                   fDepth;             // Delay scale
+                    float                   nOvlDelay;          // Overlapping delay shift in samples
+                    float                   nOvlDepth;          // Overlapping depth
                     float                   fNormShift;         // Normalized shift
                     float                   fNormScale;         // Normalized scale
+                    float                   fOutPhase;          // Output phase value
+                    float                   fOutShift;          // Output shift value
+                    uint32_t                nOutDelay;          // Output delay
 
                     plug::IPort            *pPhase;             // Output phase
                     plug::IPort            *pShift;             // Output delay shift
                     plug::IPort            *pDelay;             // Actual delay
+                    plug::IPort            *pLfoId;             // Actual LFO used (0=none, 1=first, 2=second)
                 } voice_t;
 
                 typedef struct lfo_t
@@ -62,9 +67,12 @@ namespace lsp
                     uint32_t                nPeriod;            // LFO period (full, first half, second half)
                     float                   fOverlap;           // LFO overlapping
                     float                   fDelay;             // Delay
+                    uint32_t                nOldDelay;          // Old delay
+                    uint32_t                nDelay;             // Actual delay
+                    uint32_t                nOldInitPhase;      // Old init phase
                     uint32_t                nInitPhase;         // Initial phase
                     float                   fIVoicePhase;       // Inter-voice phase
-                    float                   fIChannelPhase;     // Inter-channel phase
+                    float                   fIChanPhase;        // Inter-channel phase
                     float                   fArg[2];            // LFO arguments
 
                     uint32_t                nVoices;            // Number of active voices
@@ -116,13 +124,25 @@ namespace lsp
                 float                  *vBuffer;            // Temporary buffer for processing
                 float                  *vLfoPhase;          // LFO phase
 
+                uint32_t                nRealSampleRate;    // Real sample rate after oversampling
                 uint32_t                nPhase;             // Current base LFO phase
+                uint32_t                nOldPhaseStep;      // Old phase increment
+                uint32_t                nPhaseStep;         // Phase increment
                 uint32_t                nVoices;            // Number of voices
+                uint32_t                nCrossfade;         // Cross-fade threshold
+                float                   fCrossfade;         // Cross-fade coefficient
+                mix_func_t              pCrossfadeFunc;     // Cross-fade function
                 float                   fDepth;             // Depth
+                uint32_t                nOldDepth;          // Old Depth
+                uint32_t                nDepth;             // Old Depth
                 float                   fRate;              // Rate
+                float                   fOldInGain;         // Old input gain
                 float                   fInGain;            // Input gain
+                float                   fOldDryGain;        // Old dry gain
                 float                   fDryGain;           // Dry gain
+                float                   fOldWetGain;        // Old wet gain
                 float                   fWetGain;           // Wet gain
+                float                   fOldAmount;         // Old amount
                 float                   fAmount;            // Amount
                 bool                    bMS;                // Mid/Side mode
                 bool                    bMono;              // Mono mode
