@@ -111,7 +111,7 @@ namespace lsp
             COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, 0, osc_periods), \
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_PERCENT, chorus::LFO_DELAY, delay), \
+            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
             CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
@@ -120,7 +120,7 @@ namespace lsp
             COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, 0, osc_periods), \
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_PERCENT, chorus::LFO_DELAY, delay), \
+            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
             CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
             CYC_CONTROL("lcp" id, "Inter-channel phase" label, U_DEG, chorus::CHANNEL_PHASE), \

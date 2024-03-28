@@ -69,7 +69,7 @@ namespace lsp
             static constexpr size_t VOICES_STEP         = 1;
 
             static constexpr float  DEPTH_MIN           = 0.1f;
-            static constexpr float  DEPTH_MAX           = 10.0f;
+            static constexpr float  DEPTH_MAX           = 20.0f;
             static constexpr float  DEPTH_DFL           = 5.0f;
             static constexpr float  DEPTH_STEP          = 0.005f;
 

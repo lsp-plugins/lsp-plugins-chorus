@@ -1,7 +1,7 @@
 <plugin resizable="true">
 	<hbox>
 		<group ui:inject="GraphGroup" ipadding="0" expand="true" fill="true" text="labels.graphs.LFO">
-			<grid rows="4" cols="4" spacing="4">
+			<grid rows="5" cols="4" spacing="4">
 				<!-- Row 1 -->
 				<cell cols="2">
 					<label text="LFO1" />
@@ -231,6 +231,112 @@
 						<text x="360" y="0" halign="1" valign="1" text="graph.axis.phase" />
 		
 						<text x="360.0 - 3.6*:xfade" y="1" halign="-1" valign="1" text="labels.lfo.crossfade" color="graph_marker_cycle" color.a="0.5"/>
+					</graph>
+				</cell>
+				
+				<cell cols="4">
+					<graph hfill="true" height.min="64">
+						<origin hpos="-1" vpos="0" visibility="false" />
+						<axis angle="0" min="0" max="(((:lfo2) and (:ld_2 gt :ld_1)) ? :ld_2 : :ld_1) + :depth + 5" visiblity="true" />
+						<axis angle="0.5" min="-3" max="3" visibility="false" />
+						<axis angle="0" min="0" max="1" />
+						
+						<ui:with color="graph_alt_2">
+							<marker v="2.5" />
+							<marker v="5" />
+							<marker v="7.5" />
+							<marker v="12.5" />
+							<marker v="15" />
+							<marker v="17.5" />
+							<marker v="22.5" />
+							<marker v="25" />
+							<marker v="27.5" />
+							<marker v="32.5" />
+							<marker v="35" />
+							<marker v="37.5" />
+						</ui:with>
+						
+						<ui:with color="graph_alt_1">
+							<marker v="10" />
+							<marker v="30" />
+						</ui:with>
+						
+						<ui:with color="graph_sec">
+							<marker v="20" />
+						</ui:with>
+						
+						<!-- Markers -->
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vmd_${i}" color="graph_mesh" color.a="0.65"
+									visibility=":vml_${i} ine 0" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vmd_${i}l"
+									color="(:ms) ? 'mid' : 'left'" color.a="0.65"
+									visibility=":vml_${i}l ine 0" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vmd_${i}r"
+									color="(:ms) ? 'side' : 'right'" color.a="0.65"
+									visibility=":vml_${i}r ine 0" />
+							</ui:for>
+						</ui:if>
+						
+						<!-- Dots -->
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmd_${i}" y="(:vml_${i} ieq 1) ? 1.5 : -1.5" color="graph_mesh" bcolor="graph_mesh"
+									visibility=":vml_${i} ine 0" />
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmd_${i}l" y="(:vml_${i}l ieq 1) ? 2 : -1"
+									color="(:ms) ? 'mid' : 'left'"
+									bcolor="(:ms) ? 'mid' : 'left'"
+									visibility=":vml_${i}l ine 0" />
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmd_${i}r" y="(:vml_${i}r ieq 1) ? 1 : -2"
+									color="(:ms) ? 'side' : 'right'"
+									bcolor="(:ms) ? 'side' : 'right'"
+									visibility=":vml_${i}r ine 0" />
+							</ui:for>
+						</ui:if>
+						
+						<!-- Text -->
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="30">
+							<text x="2.5" text="2.5" />
+							<text x="7.5" text="7.5" />
+							<text x="12.5" text="12.5" />
+							<text x="17.5" text="17.5" />
+							<text x="22.5" text="22.5" />
+							<text x="27.5" text="27.5" />
+							<text x="32.5" text="32.5" />
+							<text x="37.5" text="37.5" />
+						</ui:with>
+						
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="20">
+							<text x="5" text="5" />
+							<text x="15" text="15" />
+							<text x="25" text="25" />
+							<text x="35" text="35" />
+						</ui:with>
+						
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="10">
+							<text x="10" text="10" />
+							<text x="20" text="20" />
+							<text x="30" text="30" />
+							<text x="40" text="40" />
+						</ui:with>
+						
+						<ui:with ox="2" y="0" valign="-1"  pgroup="0" priority="0">
+							<text x="0" halign="1" text="0" />
+							<text x="1" halign="-1" text="graph.units.ms" />
+						</ui:with> 
 					</graph>
 				</cell>
 				

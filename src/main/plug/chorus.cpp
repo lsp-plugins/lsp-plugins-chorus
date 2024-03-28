@@ -780,6 +780,9 @@ namespace lsp
                         {
                             lfo_t *lfo              = &vLfo[j];
 
+                            const float lfo_delay   = ilerp(lfo->nOldDelay, lfo->nDelay, s);
+                            const float lfo_depth   = ilerp(nOldDepth, nDepth, s);
+
                             // Process each voice that matches the channel for current LFO
                             for (size_t k=0; k<lfo->nVoices; ++k)
                             {
@@ -788,9 +791,7 @@ namespace lsp
                                 float o_phase           = i_phase * fCrossfade;
                                 float c_phase           = o_phase * lfo->fArg[0] + lfo->fArg[1];
                                 float c_func            = v->fNormScale * lfo->pFunc(c_phase) + v->fNormShift;
-                                size_t c_shift          =
-                                    ilerp(lfo->nOldDelay, lfo->nDelay, s) +
-                                    ilerp(nOldDepth, nDepth, s) * c_func;
+                                size_t c_shift          = lfo_delay + lfo_depth * c_func;
 //                                size_t c_fbshift        =
 //                                    c_shift +
 //                                    ilerp(nOldFeedDelay, nFeedDelay, s);
@@ -809,9 +810,7 @@ namespace lsp
                                     i_phase                 = i_phase + PHASE_MAX;
                                     c_phase                 = i_phase * fCrossfade * lfo->fArg[0] + lfo->fArg[1];
                                     c_func                  = v->fNormScale * lfo->pFunc(c_phase) + v->fNormShift;
-                                    c_shift                 =
-                                        ilerp(lfo->nOldDelay, lfo->nDelay, s) +
-                                        ilerp(nOldDepth, nDepth, s) * c_func;
+                                    c_shift                 = lfo_delay + lfo_depth * c_func;
 //                                    c_fbshift               =
 //                                        c_shift +
 //                                        ilerp(nOldFeedDelay, nFeedDelay, s);
@@ -834,15 +833,16 @@ namespace lsp
                         phase                   = (phase + ilerp(nOldPhaseStep, nPhaseStep, s)) & PHASE_MASK;
                     }
 
-                    // Update LFO phase shift
-                    for (size_t j=0; j<nLfo; ++j)
-                    {
-                        lfo_t *lfo              = &vLfo[j];
-                        lfo->nOldInitPhase      = lfo->nInitPhase;
-                    }
-
                     // Perform downsampling back into channel's buffer
                     c->sOversampler.downsample(c->vBuffer, vBuffer, to_do);
+                }
+
+                // Update LFO parameters
+                for (size_t j=0; j<nLfo; ++j)
+                {
+                    lfo_t *lfo              = &vLfo[j];
+                    lfo->nOldDelay          = lfo->nDelay;
+                    lfo->nOldInitPhase      = lfo->nInitPhase;
                 }
 
                 // Convert back to left-right if needed
@@ -894,6 +894,7 @@ namespace lsp
                 // Commit values
                 nPhase              = phase;
                 nOldPhaseStep       = nPhaseStep;
+                nOldDepth           = nDepth;
                 fOldAmount          = fAmount;
 //                fOldFeedGain        = fFeedGain;
 //                nOldFeedDelay       = nFeedDelay;
@@ -907,7 +908,6 @@ namespace lsp
             // Output information about phases for each voice
             const size_t max_v      = (nLfo > 1) ? (nChannels * meta::chorus::VOICES_MAX)/2 : nChannels * meta::chorus::VOICES_MAX;
 
-            lsp_trace("----");
             // Apply changes from each LFO
             for (size_t i=0; i<nLfo; ++i)
             {
@@ -923,14 +923,14 @@ namespace lsp
                     v->pDelay->set_value(dspu::samples_to_millis(nRealSampleRate, v->nOutDelay));
                     v->pLfoId->set_value(i + 1);
 
-                    lsp_trace("lfo %d voice %d = {sc=%f, sh=%f, p=%f, s=%f, d=%f, id=%f}",
-                        int(i), int(j),
-                        v->fNormScale,
-                        v->fNormShift,
-                        v->pPhase->value(),
-                        v->pShift->value(),
-                        v->pDelay->value(),
-                        v->pLfoId->value());
+//                    lsp_trace("lfo %d voice %d = {sc=%f, sh=%f, p=%f, s=%f, d=%f, id=%f}",
+//                        int(i), int(j),
+//                        v->fNormScale,
+//                        v->fNormShift,
+//                        v->pPhase->value(),
+//                        v->pShift->value(),
+//                        v->pDelay->value(),
+//                        v->pLfoId->value());
                 }
 
                 // Clear other meters
