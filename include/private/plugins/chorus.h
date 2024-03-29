@@ -144,6 +144,10 @@ namespace lsp
                 float                   fWetGain;           // Wet gain
                 float                   fOldAmount;         // Old amount
                 float                   fAmount;            // Amount
+                float                   fOldFeedGain;       // Old feedback gain
+                float                   fFeedGain;          // Feed-back gain
+                size_t                  nOldFeedDelay;      // Old feedback delay
+                size_t                  nFeedDelay;         // Feed-back delay
                 bool                    bMS;                // Mid/Side mode
                 bool                    bMono;              // Mono mode
 
