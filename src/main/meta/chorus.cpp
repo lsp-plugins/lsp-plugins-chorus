@@ -104,6 +104,27 @@ namespace lsp
             { NULL,                     NULL}
         };
 
+        static const port_item_t voices_list[] =
+        {
+            { "1",                      NULL                                },
+            { "2",                      NULL                                },
+            { "3",                      NULL                                },
+            { "4",                      NULL                                },
+            { "5",                      NULL                                },
+            { "6",                      NULL                                },
+            { "7",                      NULL                                },
+            { "8",                      NULL                                },
+            { "9",                      NULL                                },
+            { "10",                     NULL                                },
+            { "11",                     NULL                                },
+            { "12",                     NULL                                },
+            { "13",                     NULL                                },
+            { "14",                     NULL                                },
+            { "15",                     NULL                                },
+            { "16",                     NULL                                },
+            { NULL,                     NULL}
+        };
+
         //-------------------------------------------------------------------------
         // Plugin metadata
 
@@ -113,7 +134,7 @@ namespace lsp
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
             CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
+            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
         #define CHORUS_LFO_STEREO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
@@ -122,7 +143,7 @@ namespace lsp
             CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
             CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lvp" id, "Inter-voice phase" label, U_DEG, chorus::VOICE_PHASE), \
+            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
             CYC_CONTROL("lcp" id, "Inter-channel phase" label, U_DEG, chorus::CHANNEL_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
@@ -160,7 +181,7 @@ namespace lsp
             TRIGGER("reset", "Reset phase to initial value"),
 
             // LFO settings
-            INT_CONTROL("voices", "Number of voices", U_NONE, chorus::VOICES),
+            COMBO("voices", "Number of voices", 3, voices_list),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),
@@ -232,7 +253,7 @@ namespace lsp
             TRIGGER("reset", "Reset phase to initial"),
 
             // LFO settings
-            INT_CONTROL("voices", "Number of voices", U_NONE, chorus::VOICES),
+            COMBO("voices", "Number of voices", 3, voices_list),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),

@@ -241,6 +241,7 @@ namespace lsp
                 c->sRing.construct();
                 c->sFeedback.construct();
                 c->sOversampler.construct();
+                c->sOversampler.init();
 
                 c->vIn                  = NULL;
                 c->vOut                 = NULL;
@@ -472,7 +473,9 @@ namespace lsp
             }
             size_t oversampling     = vChannels[0].sOversampler.get_oversampling();
             size_t latency          = vChannels[0].sOversampler.latency();
-            nRealSampleRate         = fSampleRate * oversampling;
+            size_t srate            = fSampleRate * oversampling;
+            bool srate_changed      = nRealSampleRate != srate;
+            nRealSampleRate         = srate;
 
             // Update state of the 'reset' trigger
             sReset.submit(pReset->value());
@@ -525,14 +528,14 @@ namespace lsp
 
             // LFO setup
             const size_t n_lfo      = (pLfo2Enable->value() >= 0.5f) ? 2 : 1;
-            const size_t voices     = pVoices->value();
+            const size_t voices     = pVoices->value() + 1;
             const float depth       = pDepth->value();
-            if (depth != fDepth)
+            if ((depth != fDepth) || (srate_changed))
             {
                 update_voices           = true;
                 fDepth                  = depth;
                 nOldDepth               = nDepth;
-                nDepth                  = dspu::millis_to_samples(nRealSampleRate, fDepth);
+                nDepth                  = dspu::millis_to_samples(nRealSampleRate, depth);
             }
 
             // Re-allocate voices if number of LFOs has changed
@@ -580,7 +583,8 @@ namespace lsp
 
                 if ((lfo->fIVoicePhase != iv_phase) ||
                     (lfo->fIChanPhase != ichan_phase) ||
-                    (lfo->fDelay != delay))
+                    (lfo->fDelay != delay) ||
+                    (srate_changed))
                 {
                     lfo->fIVoicePhase       = iv_phase;
                     lfo->fIChanPhase        = ichan_phase;
