@@ -68,9 +68,9 @@ namespace lsp
 
         static const port_item_t osc_periods[] =
         {
-            { "Full",                   "flanger.period.full"               }, \
-            { "First",                  "flanger.period.first"              }, \
-            { "Last",                   "flanger.period.last"               }, \
+            { "Full",                   "chorus.period.full"                }, \
+            { "First",                  "chorus.period.first"               }, \
+            { "Last",                   "chorus.period.last"                }, \
             { NULL, NULL }
         };
 
@@ -83,8 +83,8 @@ namespace lsp
 
         static const port_item_t rate_type[] =
         {
-            { "Rate",                   "flanger.rate.rate"                 },
-            { "Tempo",                  "flanger.rate.tempo"                },
+            { "Rate",                   "chorus.rate.rate"                  },
+            { "Tempo",                  "chorus.rate.tempo"                 },
             { NULL, NULL }
         };
 

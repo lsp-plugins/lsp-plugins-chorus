@@ -258,7 +258,7 @@
 				<cell cols="4">
 					<graph hfill="true" height.min="64">
 						<origin hpos="-1" vpos="0" visibility="false" />
-						<axis angle="0" min="0" max="(((:lfo2) and (:ld_2 gt :ld_1)) ? :ld_2 : :ld_1) + :depth + 5" visiblity="true" />
+						<axis angle="0" min="0" max="(:lfo2) ? (max(:ld_1, :ld_2) + :depth + min(:ld_1, :ld_2)) : (2*:ld_1 + :depth)" visiblity="true" />
 						<axis angle="0.5" min="-3" max="3" visibility="false" />
 						<axis angle="0" min="0" max="1" />
 						
