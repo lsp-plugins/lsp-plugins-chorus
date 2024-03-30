@@ -169,10 +169,9 @@ namespace lsp
             // Operating modes
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
-            AMP_GAIN10("amount", "The overall amount of the effect", GAIN_AMP_0_DB),
 
             // Tempo/rate controls
-            CONTROL("rate", "Rate", U_HZ, chorus::RATE),
+            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
             CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
@@ -197,8 +196,8 @@ namespace lsp
 
             // Loudness control
             IN_GAIN,
-            DRY_GAIN(0.0f),
-            WET_GAIN(1.0f),
+            DRY_GAIN(GAIN_AMP_0_DB),
+            WET_GAIN(GAIN_AMP_M_6_DB),
             DRYWET(100.0f),
             OUT_GAIN,
 
@@ -241,10 +240,9 @@ namespace lsp
             SWITCH("ms", "Mid/Side mode switch", 0.0f),
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
-            AMP_GAIN10("amount", "The overall amount of the effect", GAIN_AMP_0_DB),
 
             // Tempo/rate controls
-            CONTROL("rate", "Rate", U_HZ, chorus::RATE),
+            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
             CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
@@ -269,8 +267,8 @@ namespace lsp
 
             // Loudness control
             IN_GAIN,
-            DRY_GAIN(0.0f),
-            WET_GAIN(1.0f),
+            DRY_GAIN(GAIN_AMP_0_DB),
+            WET_GAIN(GAIN_AMP_M_6_DB),
             DRYWET(100.0f),
             OUT_GAIN,
 

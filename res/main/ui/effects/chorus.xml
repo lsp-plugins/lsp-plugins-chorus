@@ -1,5 +1,25 @@
 <plugin resizable="true">
 	<hbox>
+		<!-- Mono meter for mono version -->
+		<ui:if test="ex :in">
+			<vbox vexpand="true" bg.color="bg_schema">
+				<label text="labels.chan.in" pad.v="3"/>
+				<ledmeter angle="1" bg.inherit="true" expand="true">
+					<ledchannel id="min" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="mid_in"/>
+				</ledmeter>
+			</vbox>
+		</ui:if>
+		<!-- Stereo meter for stereo version -->
+		<ui:if test="ex :in_l">
+			<vbox vexpand="true" bg.color="bg_schema">
+				<label text="labels.chan.in" pad.v="3"/>
+				<ledmeter angle="1" bg.inherit="true" expand="true">
+					<ledchannel id="min_l" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="left_in"/>
+					<ledchannel id="min_r" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="right_in"/>
+				</ledmeter>
+			</vbox>
+		</ui:if>
+		
 		<group ui:inject="GraphGroup" ipadding="0" expand="true" fill="true" text="labels.graphs.LFO">
 			<grid rows="${(ex :in_r) ? 15 : 13}" cols="4" spacing="4">
 				<!-- Row 1 -->
@@ -411,6 +431,27 @@
 				</ui:if>
 			</grid>
 		</group>
+		
+		<!-- Mono meter for mono version -->
+		<ui:if test="ex :in">
+			<vbox vexpand="true" bg.color="bg_schema">
+				<label text="labels.chan.out" pad.v="3" />
+				<ledmeter angle="1" expand="true" bg.inherit="true">
+					<ledchannel id="mout" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="mid"/>
+				</ledmeter>
+			</vbox>
+		</ui:if>
+		<!-- Stereo meter for stereo version -->
+		<ui:if test="ex :in_l">
+			<vbox vexpand="true" bg.color="bg_schema">
+				<label text="labels.chan.out" pad.v="3" />
+				<ledmeter angle="1" expand="true" bg.inherit="true">
+					<ledchannel id="mout_l" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="left"/>
+					<ledchannel id="mout_r" min="-36 db" max="+6 db" log="true" type="rms_peak" peak.visibility="true" value.color="right"/>
+				</ledmeter>
+			</vbox>
+		</ui:if>
+		
 		<vbox>
 			<!-- LFO -->
 			<group text="labels.lfo" ipadding="0">
@@ -529,13 +570,7 @@
 						<button id="sphase" text="labels.signal.phase" fill="false" pad.v="4" pad.h="6" ui:inject="Button_orange"  width="101" height="34" />
 					</align>
 					<align halign="-11">
-						<hbox fill="false" pad.v="4" pad.h="6">
-							<knob id="amount" pad.r="6"/>
-							<vbox>
-								<label text="labels.amount" />
-								<value id="amount" width="48" same_line="true"/>
-							</vbox>
-						</hbox>
+						<void /> <!-- TODO -->
 					</align>
 					<cell cols="2"><void vexpand="true"/></cell>
 					<cell cols="2"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>

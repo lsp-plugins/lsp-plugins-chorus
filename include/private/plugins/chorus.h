@@ -142,8 +142,6 @@ namespace lsp
                 float                   fDryGain;           // Dry gain
                 float                   fOldWetGain;        // Old wet gain
                 float                   fWetGain;           // Wet gain
-                float                   fOldAmount;         // Old amount
-                float                   fAmount;            // Amount
                 float                   fOldFeedGain;       // Old feedback gain
                 float                   fFeedGain;          // Feed-back gain
                 size_t                  nOldFeedDelay;      // Old feedback delay
@@ -156,7 +154,6 @@ namespace lsp
                 plug::IPort            *pMS;                // Mid/Side switch
                 plug::IPort            *pInvPhase;          // Phase inverse
                 plug::IPort            *pOversampling;      // Oversampling
-                plug::IPort            *pAmount;            // Overall effect amount
 
                 plug::IPort            *pRate;              // Rate
                 plug::IPort            *pFraction;          // Time fraction

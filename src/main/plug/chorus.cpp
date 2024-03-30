@@ -153,8 +153,6 @@ namespace lsp
             fDryGain            = GAIN_AMP_M_6_DB;
             fOldWetGain         = GAIN_AMP_M_6_DB;
             fWetGain            = GAIN_AMP_M_6_DB;
-            fOldAmount          = GAIN_AMP_0_DB;
-            fAmount             = GAIN_AMP_0_DB;
             fOldFeedGain        = 0.0f;
             fFeedGain           = 0.0f;
             nOldFeedDelay       = 0;
@@ -169,7 +167,6 @@ namespace lsp
             pMS                 = NULL;
             pInvPhase           = NULL;
             pOversampling       = NULL;
-            pAmount             = NULL;
 
             pRate               = NULL;
             pFraction           = NULL;
@@ -303,7 +300,6 @@ namespace lsp
             }
             BIND_PORT(pInvPhase);
             BIND_PORT(pOversampling);
-            BIND_PORT(pAmount);
 
             // Tempo/rate controls
             lsp_trace("Binding tempo/rate controls");
@@ -491,7 +487,6 @@ namespace lsp
             const bool bypass       = pBypass->value() >= 0.5f;
             bool fb_on              = pFeedOn->value() >= 0.5f;
             float feed_gain         = (fb_on) ? pFeedGain->value() : 0.0f;
-            const float amount_gain = pAmount->value();
             const bool mid_side     = (pMS != NULL) ? pMS->value() >= 0.5f : false;
             float crossfade         = pCrossfade->value() * 0.01f;
 
@@ -513,7 +508,7 @@ namespace lsp
 
             // Update common parameters
             const float dry_gain    = pDryGain->value();
-            const float wet_gain    = pWetGain->value();
+            const float wet_gain    = (pInvPhase->value() < 0.5f) ? pWetGain->value() : -pWetGain->value();
             const float drywet      = pDryWet->value() * 0.01f;
 
             nOldPhaseStep           = nPhaseStep;
@@ -524,8 +519,6 @@ namespace lsp
             fInGain                 = in_gain;
             fDryGain                = (dry_gain * drywet + 1.0f - drywet) * out_gain;
             fWetGain                = wet_gain * drywet * out_gain;
-            fOldAmount              = fAmount;
-            fAmount                 = (pInvPhase->value() >= 0.5f) ? -amount_gain : amount_gain;
             nOldFeedDelay           = nFeedDelay;
             nFeedDelay              = dspu::millis_to_samples(srate, pFeedDelay->value());
             fOldFeedGain            = fFeedGain;
@@ -837,9 +830,7 @@ namespace lsp
                         c->sFeedback.append(p_sample);
 
                         // Update buffer sample
-                        vBuffer[i]              =
-                            c_sample +
-                            p_sample * lerp(fOldAmount, fAmount, s);
+                        vBuffer[i]              = p_sample;
 
                         // Update the phase
                         phase                   = (phase + ilerp(nOldPhaseStep, nPhaseStep, s)) & PHASE_MASK;
@@ -907,7 +898,6 @@ namespace lsp
                 nPhase              = phase;
                 nOldPhaseStep       = nPhaseStep;
                 nOldDepth           = nDepth;
-                fOldAmount          = fAmount;
                 fOldFeedGain        = fFeedGain;
                 nOldFeedDelay       = nFeedDelay;
                 fOldInGain          = fInGain;
