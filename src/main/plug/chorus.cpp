@@ -167,6 +167,10 @@ namespace lsp
             pMS                 = NULL;
             pInvPhase           = NULL;
             pOversampling       = NULL;
+            pHpfMode            = NULL;
+            pHpfFreq            = NULL;
+            pLpfMode            = NULL;
+            pLpfFreq            = NULL;
 
             pRate               = NULL;
             pFraction           = NULL;
@@ -242,7 +246,11 @@ namespace lsp
                 c->sRing.construct();
                 c->sFeedback.construct();
                 c->sOversampler.construct();
+                c->sEq.construct();
+
                 c->sOversampler.init();
+                c->sEq.init(2, 0);
+                c->sEq.set_mode(dspu::EQM_IIR);
 
                 c->vIn                  = NULL;
                 c->vOut                 = NULL;
@@ -300,6 +308,10 @@ namespace lsp
             }
             BIND_PORT(pInvPhase);
             BIND_PORT(pOversampling);
+            BIND_PORT(pHpfMode);
+            BIND_PORT(pHpfFreq);
+            BIND_PORT(pLpfMode);
+            BIND_PORT(pLpfFreq);
 
             // Tempo/rate controls
             lsp_trace("Binding tempo/rate controls");
@@ -396,6 +408,7 @@ namespace lsp
                     c->sRing.destroy();
                     c->sFeedback.destroy();
                     c->sOversampler.destroy();
+                    c->sEq.destroy();
                 }
                 vChannels   = NULL;
             }
@@ -426,6 +439,7 @@ namespace lsp
                 c->sRing.init(max_delay * meta::chorus::OVERSAMPLING_MAX + BUFFER_SIZE*2);
                 c->sFeedback.init(max_feedback * meta::chorus::OVERSAMPLING_MAX + BUFFER_SIZE*2);
                 c->sOversampler.set_sample_rate(sr);
+                c->sEq.set_sample_rate(sr);
             }
         }
 
@@ -691,6 +705,27 @@ namespace lsp
 
                 // Update bypass
                 c->sBypass.set_bypass(bypass);
+
+                // Setup hi-pass filter for processed signal
+                dspu::filter_params_t fp;
+                size_t hp_slope = pHpfMode->value() * 2;
+                fp.nType        = (hp_slope > 0) ? dspu::FLT_BT_BWC_HIPASS : dspu::FLT_NONE;
+                fp.fFreq        = pHpfFreq->value();
+                fp.fFreq2       = fp.fFreq;
+                fp.fGain        = 1.0f;
+                fp.nSlope       = hp_slope;
+                fp.fQuality     = 0.0f;
+                c->sEq.set_params(0, &fp);
+
+                // Setup low-pass filter for processed signal
+                size_t lp_slope = pLpfMode->value() * 2;
+                fp.nType        = (lp_slope > 0) ? dspu::FLT_BT_BWC_LOPASS : dspu::FLT_NONE;
+                fp.fFreq        = pLpfFreq->value();
+                fp.fFreq2       = fp.fFreq;
+                fp.fGain        = 1.0f;
+                fp.nSlope       = lp_slope;
+                fp.fQuality     = 0.0f;
+                c->sEq.set_params(1, &fp);
             }
 
             bMS                     = mid_side;
@@ -838,6 +873,9 @@ namespace lsp
 
                     // Perform downsampling back into channel's buffer
                     c->sOversampler.downsample(c->vBuffer, vBuffer, to_do);
+
+                    // Apply equalizer
+                    c->sEq.process(c->vBuffer, c->vBuffer, to_do);
                 }
 
                 // Update LFO parameters
@@ -960,14 +998,22 @@ namespace lsp
                     {
                         dsp::copy(mesh->pvData[0], vLfoPhase, meta::chorus::LFO_MESH_SIZE);
 
-                        for (size_t j=0; j<lfo->nVoices; ++j)
+                        if (lfo->nVoices > 0)
                         {
-                            const voice_t *v    = &lfo->vVoices[j*nChannels];
-                            dsp::mul_k3(mesh->pvData[j+1], lfo->vLfoMesh, v->fNormScale, meta::chorus::LFO_MESH_SIZE);
-                            dsp::add_k2(mesh->pvData[j+1], v->fNormShift, meta::chorus::LFO_MESH_SIZE);
-                        }
+                            for (size_t j=0; j<lfo->nVoices; ++j)
+                            {
+                                const voice_t *v    = &lfo->vVoices[j*nChannels];
+                                dsp::mul_k3(mesh->pvData[j+1], lfo->vLfoMesh, v->fNormScale, meta::chorus::LFO_MESH_SIZE);
+                                dsp::add_k2(mesh->pvData[j+1], v->fNormShift, meta::chorus::LFO_MESH_SIZE);
+                            }
 
-                        mesh->data(lfo->nVoices + 1, meta::chorus::LFO_MESH_SIZE);
+                            mesh->data(lfo->nVoices + 1, meta::chorus::LFO_MESH_SIZE);
+                        }
+                        else
+                        {
+                            dsp::copy(mesh->pvData[1], lfo->vLfoMesh, meta::chorus::LFO_MESH_SIZE);
+                            mesh->data(2, meta::chorus::LFO_MESH_SIZE);
+                        }
                     }
                     else
                         mesh->data(0, 0);

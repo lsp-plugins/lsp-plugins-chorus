@@ -125,6 +125,15 @@ namespace lsp
             { NULL,                     NULL}
         };
 
+        static const port_item_t filter_slopes[] =
+        {
+            { "off",        "eq.slope.off"      },
+            { "12 dB/oct",  "eq.slope.12dbo"    },
+            { "24 dB/oct",  "eq.slope.24dbo"    },
+            { "36 dB/oct",  "eq.slope.36dbo"    },
+            { NULL, NULL }
+        };
+
         //-------------------------------------------------------------------------
         // Plugin metadata
 
@@ -169,6 +178,10 @@ namespace lsp
             // Operating modes
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
+            COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
+            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
+            COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
             LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
@@ -240,6 +253,10 @@ namespace lsp
             SWITCH("ms", "Mid/Side mode switch", 0.0f),
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
+            COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
+            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
+            COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
             LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),

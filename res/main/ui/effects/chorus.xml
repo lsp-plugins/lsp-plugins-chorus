@@ -110,7 +110,7 @@
 						<!-- Dots -->
 						<ui:if test="!(ex :in_r)">
 							<ui:for id="i" first="1" count="16">
-								<dot x.id="vms_${i}" y.id="vmp_${i}" color="graph_mesh" bcolor="graph_mesh"
+								<dot x.id="vmp_${i}" y.id="vms_${i}" color="graph_mesh" bcolor="graph_mesh"
 									visibility=":vml_${i} ieq 1" />
 							</ui:for>
 						</ui:if>
@@ -184,7 +184,7 @@
 								y.index="${i}"
 								width="3"
 								color="graph_mesh"
-								visibility="(:lfo2) and (:voices ige 2)"
+								visibility=":lfo2"
 								smooth="true" />
 						</ui:for>
 		
@@ -222,7 +222,7 @@
 						<!-- Dots -->
 						<ui:if test="!(ex :in_r)">
 							<ui:for id="i" first="1" count="16">
-								<dot x.id="vms_${i}" y.id="vmp_${i}" color="graph_mesh" bcolor="graph_mesh"
+								<dot x.id="vmp_${i}" y.id="vms_${i}" color="graph_mesh" bcolor="graph_mesh"
 									visibility=":vml_${i} ieq 2" />
 							</ui:for>
 						</ui:if>
@@ -570,7 +570,16 @@
 						<button id="sphase" text="labels.signal.phase" fill="false" pad.v="4" pad.h="6" ui:inject="Button_orange"  width="101" height="34" />
 					</align>
 					<align halign="-11">
-						<void /> <!-- TODO -->
+						<grid rows="4" cols="2">
+							<label text="labels.flt.HPF" pad.h="6" pad.v="4" fill="false" vreduce="true"/>
+							<label text="labels.flt.LPF" pad.h="6" pad.v="4" fill="false" vreduce="true"/>
+							<combo id="hpm" pad.h="6" bright="(:hpm) ? 1 : 0.75" bg.bright="(:hpm) ? 1 : :const_bg_darken"/>
+							<combo id="lpm" pad.h="6" bright="(:lpm) ? 1 : 0.75" bg.bright="(:lpm) ? 1 : :const_bg_darken"/>
+							<knob id="hpf" size="20" scolor="(:hpm) ? 'kscale' : 'kscale_inactive'" bg.bright="(:hpm) ? 1 : :const_bg_darken"/>
+							<knob id="lpf" size="20" scolor="(:lpm) ? 'kscale' : 'kscale_inactive'" bg.bright="(:lpm) ? 1 : :const_bg_darken"/>
+							<value id="hpf" sline="true" bright="(:hpm) ? 1 : 0.75" bg.bright="(:hpm) ? 1 : :const_bg_darken"/>
+							<value id="lpf" sline="true" bright="(:lpm) ? 1 : 0.75" bg.bright="(:lpm) ? 1 : :const_bg_darken"/>
+						</grid>
 					</align>
 					<cell cols="2"><void vexpand="true"/></cell>
 					<cell cols="2"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>

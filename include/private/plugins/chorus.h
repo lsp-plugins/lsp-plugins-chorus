@@ -24,6 +24,7 @@
 
 #include <lsp-plug.in/dsp-units/ctl/Bypass.h>
 #include <lsp-plug.in/dsp-units/ctl/Toggle.h>
+#include <lsp-plug.in/dsp-units/filters/Equalizer.h>
 #include <lsp-plug.in/dsp-units/misc/lfo.h>
 #include <lsp-plug.in/dsp-units/util/Delay.h>
 #include <lsp-plug.in/dsp-units/util/Oversampler.h>
@@ -100,6 +101,7 @@ namespace lsp
                     dspu::RingBuffer        sRing;              // Ring buffer for flanger effect processing
                     dspu::RingBuffer        sFeedback;          // Feedback delay buffer
                     dspu::Oversampler       sOversampler;       // Oversampler
+                    dspu::Equalizer         sEq;                // Equalizer for processed signal
 
                     // Parameters
                     float                   *vIn;               // Input buffer
@@ -154,6 +156,10 @@ namespace lsp
                 plug::IPort            *pMS;                // Mid/Side switch
                 plug::IPort            *pInvPhase;          // Phase inverse
                 plug::IPort            *pOversampling;      // Oversampling
+                plug::IPort            *pHpfMode;           // High-pass filter mode
+                plug::IPort            *pHpfFreq;           // High-pass filter frequency
+                plug::IPort            *pLpfMode;           // Low-pass filter mode
+                plug::IPort            *pLpfFreq;           // Low-pass filter frequency
 
                 plug::IPort            *pRate;              // Rate
                 plug::IPort            *pFraction;          // Time fraction
