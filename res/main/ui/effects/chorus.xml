@@ -257,33 +257,60 @@
 				<!-- Row 3 -->
 				<cell cols="4">
 					<graph hfill="true" height.min="64">
+						<ui:set id="axis_max" value="(min(:ld_1, (:lfo2) ? :ld_2 : :ld_1) + max(:ld_1, (:lfo2) ? :ld_2 : :ld_1) + :depth)" />
 						<origin hpos="-1" vpos="0" visibility="false" />
-						<axis angle="0" min="0" max="(:lfo2) ? (max(:ld_1, :ld_2) + :depth + min(:ld_1, :ld_2)) : (2*:ld_1 + :depth)" visiblity="true" />
+						<axis angle="0" min="0" max="max(${axis_max}, 2)" visiblity="true" />
 						<axis angle="0.5" min="-3" max="3" visibility="false" />
 						<axis angle="0" min="0" max="1" />
 						
-						<ui:with color="graph_alt_2">
+						<ui:with color="graph_alt_2" visibility="(${axis_max} lt 4)">
+							<marker v="0.5" />
+							<marker v="1.5" />
 							<marker v="2.5" />
+							<marker v="3.5" />
+						</ui:with>
+						
+						<ui:with color="graph_alt_2" visibility="(${axis_max} lt 10)">
+							<marker v="1" />
+							<marker v="2" />
+							<marker v="3" />
+							<marker v="4" />
 							<marker v="5" />
+							<marker v="6" />
+							<marker v="7" />
+							<marker v="8" />
+							<marker v="9" />
+						</ui:with>
+						
+						<ui:with color="graph_alt_2" visibility="(${axis_max} lt 40) and (${axis_max} ge 10)">
+							<marker v="2.5" />
 							<marker v="7.5" />
 							<marker v="12.5" />
-							<marker v="15" />
 							<marker v="17.5" />
 							<marker v="22.5" />
-							<marker v="25" />
 							<marker v="27.5" />
 							<marker v="32.5" />
-							<marker v="35" />
 							<marker v="37.5" />
+						</ui:with>
+						
+						<ui:with color="graph_alt_2">
+							<marker v="5" />
+							<marker v="15" />
+							<marker v="25" />
+							<marker v="35" />
+							<marker v="45" />
+							<marker v="55" />
 						</ui:with>
 						
 						<ui:with color="graph_alt_1">
 							<marker v="10" />
 							<marker v="30" />
+							<marker v="50" />
 						</ui:with>
 						
 						<ui:with color="graph_sec">
 							<marker v="20" />
+							<marker v="40" />
 						</ui:with>
 						
 						<!-- Markers -->
@@ -329,7 +356,26 @@
 						</ui:if>
 						
 						<!-- Text -->
-						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="30">
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="50" visibility="(${axis_max} lt 4)">
+							<text x="0.5" text="0.5" />
+							<text x="1.5" text="1.5" />
+							<text x="2.5" text="2.5" />
+							<text x="3.5" text="3.5" />
+						</ui:with>
+						
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="40" visibility="(${axis_max} lt 10)">
+							<text x="1" text="1" />
+							<text x="2" text="2" />
+							<text x="3" text="3" />
+							<text x="4" text="4" />
+							<text x="5" text="5" />
+							<text x="6" text="6" />
+							<text x="7" text="7" />
+							<text x="8" text="8" />
+							<text x="9" text="9" />
+						</ui:with>
+						
+						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="30" visibility="(${axis_max} lt 40) and (${axis_max} ge 10)">
 							<text x="2.5" text="2.5" />
 							<text x="7.5" text="7.5" />
 							<text x="12.5" text="12.5" />
@@ -345,6 +391,8 @@
 							<text x="15" text="15" />
 							<text x="25" text="25" />
 							<text x="35" text="35" />
+							<text x="45" text="45" />
+							<text x="55" text="55" />
 						</ui:with>
 						
 						<ui:with y="0" valign="-1" halign="1" pgroup="0" priority="10">
@@ -352,6 +400,8 @@
 							<text x="20" text="20" />
 							<text x="30" text="30" />
 							<text x="40" text="40" />
+							<text x="50" text="50" />
+							<text x="60" text="60" />
 						</ui:with>
 						
 						<ui:with ox="2" y="0" valign="-1"  pgroup="0" priority="0">
