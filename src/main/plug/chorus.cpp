@@ -1186,8 +1186,166 @@ namespace lsp
         void chorus::dump(dspu::IStateDumper *v) const
         {
             plug::Module::dump(v);
+            const size_t max_voices = meta::chorus::VOICES_MAX * nChannels;
 
-            // TODO
+            v->write("nChannels", nChannels);
+            v->write("nLfo", nLfo);
+
+            v->write_object("sReset", &sReset);
+            v->begin_array("vChannels", vChannels, nChannels);
+            {
+                for (size_t i=0; i<nChannels; ++i)
+                {
+                    const channel_t *c = &vChannels[i];
+
+                    v->begin_object(c, sizeof(channel_t));
+                    {
+                        v->write_object("sBypass", &c->sBypass);
+                        v->write_object("sDelay", &c->sDelay);
+                        v->write_object("sRing", &c->sRing);
+                        v->write_object("sFeedback", &c->sFeedback);
+                        v->write_object("sOversampler", &c->sOversampler);
+                        v->write_object("sEq", &c->sEq);
+
+                        v->write("vIn", c->vIn);
+                        v->write("vOut", c->vOut);
+                        v->write("vBuffer", c->vBuffer);
+
+                        v->write("pIn", c->pIn);
+                        v->write("pOut", c->pOut);
+                        v->write("pInLevel", c->pInLevel);
+                        v->write("pOutLevel", c->pOutLevel);
+                    }
+                    v->end_object();
+                }
+            }
+            v->end_array();
+            v->begin_array("vVoices", vVoices, max_voices);
+            {
+                for (size_t i=0; i<max_voices; ++i)
+                {
+                    const voice_t *s = &vVoices[i];
+                    v->begin_object(s, sizeof(voice_t));
+                    {
+                        v->write("nPhase", s->nPhase);
+                        v->write("nOvlDelay", s->nOvlDelay);
+                        v->write("nOvlDepth", s->nOvlDepth);
+                        v->write("fNormShift", s->fNormShift);
+                        v->write("fNormScale", s->fNormScale);
+                        v->write("fOutPhase", s->fOutPhase);
+                        v->write("fOutShift", s->fOutShift);
+                        v->write("nOutDelay", s->nOutDelay);
+
+                        v->write("pPhase", s->pPhase);
+                        v->write("pShift", s->pShift);
+                        v->write("pDelay", s->pDelay);
+                        v->write("pLfoId", s->pLfoId);
+                    }
+                    v->end_object();
+                }
+            }
+            v->end_array();
+            v->begin_array("vLfo", vLfo, 2);
+            {
+                for (size_t i=0; i<2; ++i)
+                {
+                    const lfo_t *l = &vLfo[i];
+                    v->begin_object(l, sizeof(voice_t));
+                    {
+                        v->write("nType", l->nType);
+                        v->write("nPeriod", l->nPeriod);
+                        v->write("fOverlap", l->fOverlap);
+                        v->write("fDelay", l->fDelay);
+                        v->write("nOldDelay", l->nOldDelay);
+                        v->write("nDelay", l->nDelay);
+                        v->write("nOldInitPhase", l->nOldInitPhase);
+                        v->write("nInitPhase", l->nInitPhase);
+                        v->write("fIVoicePhase", l->fIVoicePhase);
+                        v->write("fIChanPhase", l->fIChanPhase);
+                        v->writev("fArg", l->fArg, 2);
+
+                        v->write("nVoices", l->nVoices);
+                        v->write("pFunc", l->pFunc);
+                        v->write("vLfoMesh", l->vLfoMesh);
+                        v->write("vVoices", l->vVoices);
+
+                        v->write("bSyncMesh", l->bSyncMesh);
+
+                        v->write("pType", l->pType);
+                        v->write("pPeriod", l->pPeriod);
+                        v->write("pOverlap", l->pOverlap);
+                        v->write("pDelay", l->pDelay);
+                        v->write("pInitPhase", l->pInitPhase);
+                        v->write("pIVoicePhase", l->pIVoicePhase);
+                        v->write("pIChannelPhase", l->pIChannelPhase);
+                        v->write("pMesh", l->pMesh);
+                    }
+                    v->end_object();
+                }
+            }
+            v->end_array();
+
+            v->write("vBuffer", vBuffer);
+            v->write("vLfoPhase", vLfoPhase);
+
+            v->write("nRealSampleRate", nRealSampleRate);
+            v->write("nPhase", nPhase);
+            v->write("nOldPhaseStep", nOldPhaseStep);
+            v->write("nPhaseStep", nPhaseStep);
+            v->write("nVoices", nVoices);
+            v->write("nCrossfade", nCrossfade);
+            v->write("fCrossfade", fCrossfade);
+            v->write("pCrossfadeFunc", pCrossfadeFunc);
+            v->write("fDepth", fDepth);
+            v->write("nOldDepth", nOldDepth);
+            v->write("nDepth", nDepth);
+            v->write("fRate", fRate);
+            v->write("fOldInGain", fOldInGain);
+            v->write("fInGain", fInGain);
+            v->write("fOldDryGain", fOldDryGain);
+            v->write("fDryGain", fDryGain);
+            v->write("fOldWetGain", fOldWetGain);
+            v->write("fWetGain", fWetGain);
+            v->write("fOldFeedGain", fOldFeedGain);
+            v->write("fFeedGain", fFeedGain);
+            v->write("nOldFeedDelay", nOldFeedDelay);
+            v->write("nFeedDelay", nFeedDelay);
+            v->write("bMS", bMS);
+            v->write("bMono", bMono);
+
+            v->write("pBypass", pBypass);
+            v->write("pMono", pMono);
+            v->write("pMS", pMS);
+            v->write("pInvPhase", pInvPhase);
+            v->write("pOversampling", pOversampling);
+            v->write("pHpfMode", pHpfMode);
+            v->write("pHpfFreq", pHpfFreq);
+            v->write("pLpfMode", pLpfMode);
+            v->write("pLpfFreq", pLpfFreq);
+
+            v->write("pRate", pRate);
+            v->write("pFraction", pFraction);
+            v->write("pTempo", pTempo);
+            v->write("pTempoSync", pTempoSync);
+            v->write("pTimeMode", pTimeMode);
+            v->write("pReset", pReset);
+
+            v->write("pVoices", pVoices);
+            v->write("pDepth", pDepth);
+            v->write("pCrossfade", pCrossfade);
+            v->write("pCrossfadeType", pCrossfadeType);
+            v->write("pLfo2Enable", pLfo2Enable);
+
+            v->write("pFeedOn", pFeedOn);
+            v->write("pFeedGain", pFeedGain);
+            v->write("pFeedDelay", pFeedDelay);
+            v->write("pFeedPhase", pFeedPhase);
+
+            v->write("pInGain", pInGain);
+            v->write("pDryGain", pDryGain);
+            v->write("pWetGain", pWetGain);
+            v->write("pDryWet", pDryWet);
+            v->write("pOutGain", pOutGain);
         }
 
     } /* namespace plugins */
