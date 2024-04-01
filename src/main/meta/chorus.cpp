@@ -351,7 +351,7 @@ namespace lsp
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_mono_ports,
             "effects/chorus.xml",
-            NULL,
+            "effects/chorus",
             mono_plugin_port_groups,
             &chorus_bundle
         };
@@ -378,7 +378,7 @@ namespace lsp
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_stereo_ports,
             "effects/chorus.xml",
-            NULL,
+            "effects/chorus",
             stereo_plugin_port_groups,
             &chorus_bundle
         };
