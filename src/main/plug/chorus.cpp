@@ -25,6 +25,7 @@
 #include <lsp-plug.in/dsp-units/units.h>
 #include <lsp-plug.in/plug-fw/meta/func.h>
 #include <lsp-plug.in/shared/debug.h>
+#include <lsp-plug.in/shared/id_colors.h>
 
 #include <private/plugins/chorus.h>
 
@@ -1038,8 +1039,148 @@ namespace lsp
 
         bool chorus::inline_display(plug::ICanvas *cv, size_t width, size_t height)
         {
-            // TODO
-            return false;
+            // Check proportions
+            if (height > (M_RGOLD_RATIO * width))
+                height  = M_RGOLD_RATIO * width;
+
+            // Init canvas
+            if (!cv->init(width, height))
+                return false;
+            width   = cv->width();
+            height  = cv->height();
+
+            // Clear background
+            bool bypassing = vChannels[0].sBypass.bypassing();
+            cv->set_color_rgb((bypassing) ? CV_DISABLED : CV_BACKGROUND);
+            cv->paint();
+
+            // Draw axis
+            cv->set_line_width(2.0);
+            cv->set_color_rgb(CV_WHITE);
+            cv->line(0.0f, height >> 1, width, height >> 1);
+            cv->set_line_width(1.0);
+
+            const float max_delay = (nLfo > 1) ?
+                vLfo[0].nDelay + vLfo[1].nDelay + nDepth :
+                vLfo[0].nDelay * 2 + nDepth;
+            const float norm_delay = width / max_delay;
+
+            static const uint32_t c_colors[] = {
+                CV_MIDDLE_CHANNEL,
+                CV_LEFT_CHANNEL, CV_RIGHT_CHANNEL,
+                CV_MIDDLE_CHANNEL, CV_SIDE_CHANNEL,
+                CV_SILVER, CV_SILVER
+            };
+
+            const uint32_t *colors  = &c_colors[0];
+            if ((!active()) || (bypassing))
+                colors  = &c_colors[5];
+            else if (nChannels > 1)
+                colors  = (bMS) ? &c_colors[3] : &c_colors[1];
+
+            bool aa = cv->set_anti_aliasing(true);
+            lsp_finally { cv->set_anti_aliasing(aa); };
+
+            // Draw lines and dots
+            if (nChannels > 1)
+            {
+                const float dy = height * (1.0f / 6.0f);
+
+                Color lc(colors[0]), rc(colors[1]);
+
+                // Lines
+                for (size_t i=0; i<nLfo; ++i)
+                {
+                    lfo_t *lfo = &vLfo[i];
+
+                    for (size_t j=0; j<lfo->nVoices; ++j)
+                    {
+                        const voice_t *lv = &lfo->vVoices[j*2];
+                        const voice_t *rv = &lv[1];
+                        const float lx = lv->nOutDelay * norm_delay;
+                        const float rx = rv->nOutDelay * norm_delay;
+
+                        cv->set_color(lc);
+                        cv->line(lx, 0, lx, height);
+
+                        cv->set_color(rc);
+                        cv->line(rx, 0, rx, height);
+                    }
+                }
+
+                // Dots
+                for (size_t i=0; i<nLfo; ++i)
+                {
+                    lfo_t *lfo = &vLfo[i];
+                    const float y = height * i * 0.5f;
+                    const float ly = y + dy;
+                    const float ry = ly + dy;
+
+                    for (size_t j=0; j<lfo->nVoices; ++j)
+                    {
+                        const voice_t *lv = &lfo->vVoices[j*2];
+                        const voice_t *rv = &lv[1];
+                        const float lx = lv->nOutDelay * norm_delay;
+                        const float rx = rv->nOutDelay * norm_delay;
+
+                        cv->radial_gradient(lx, ly, lc, lc, 8);
+                        cv->radial_gradient(rx, ry, rc, rc, 8);
+
+                        cv->set_color_rgb(0);
+                        cv->circle(lx, ly, 4);
+                        cv->circle(rx, ry, 4);
+
+                        cv->set_color(lc);
+                        cv->circle(lx, ly, 3);
+                        cv->set_color(rc);
+                        cv->circle(rx, ry, 3);
+                    }
+                }
+            }
+            else
+            {
+                const float dy = height * 0.25f;
+
+                Color c(colors[0]);
+
+                // Lines
+                for (size_t i=0; i<nLfo; ++i)
+                {
+                    lfo_t *lfo = &vLfo[i];
+
+                    for (size_t j=0; j<lfo->nVoices; ++j)
+                    {
+                        const voice_t *v = &lfo->vVoices[j];
+                        const float x = v->nOutDelay * norm_delay;
+
+                        cv->set_color(c);
+                        cv->line(x, 0, x, height);
+                    }
+                }
+
+                // Dots
+                for (size_t i=0; i<nLfo; ++i)
+                {
+                    lfo_t *lfo = &vLfo[i];
+                    const float y = height * i * 0.5f + dy;
+
+                    for (size_t j=0; j<lfo->nVoices; ++j)
+                    {
+                        const voice_t *v = &lfo->vVoices[j];
+                        const float x = v->nOutDelay * norm_delay;
+
+                        cv->radial_gradient(x, y, c, c, 8);
+
+                        cv->set_color_rgb(0);
+                        cv->circle(x, y, 4);
+
+                        cv->set_color(c);
+                        cv->circle(x, y, 3);
+                    }
+                }
+            }
+
+            return true;
         }
 
         void chorus::dump(dspu::IStateDumper *v) const
