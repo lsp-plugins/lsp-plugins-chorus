@@ -544,7 +544,7 @@ namespace lsp
 
             // LFO setup
             const size_t n_lfo      = (pLfo2Enable->value() >= 0.5f) ? 2 : 1;
-            const size_t voices     = pVoices->value() + 1;
+            const size_t voices     = pVoices->value() + 2;
             const float depth       = pDepth->value();
             if ((depth != fDepth) || (srate_changed))
             {

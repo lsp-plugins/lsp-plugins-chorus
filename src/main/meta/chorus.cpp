@@ -106,7 +106,6 @@ namespace lsp
 
         static const port_item_t voices_list[] =
         {
-            { "1",                      NULL                                },
             { "2",                      NULL                                },
             { "3",                      NULL                                },
             { "4",                      NULL                                },
@@ -193,7 +192,7 @@ namespace lsp
             TRIGGER("reset", "Reset phase to initial value"),
 
             // LFO settings
-            COMBO("voices", "Number of voices", 3, voices_list),
+            COMBO("voices", "Number of voices", 2, voices_list),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),
@@ -268,7 +267,7 @@ namespace lsp
             TRIGGER("reset", "Reset phase to initial"),
 
             // LFO settings
-            COMBO("voices", "Number of voices", 3, voices_list),
+            COMBO("voices", "Number of voices", 2, voices_list),
             CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
             CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", 1, crossfade_type),
