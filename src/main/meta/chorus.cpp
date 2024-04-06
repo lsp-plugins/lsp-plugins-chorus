@@ -85,6 +85,7 @@ namespace lsp
         {
             { "Rate",                   "chorus.rate.rate"                  },
             { "Tempo",                  "chorus.rate.tempo"                 },
+            { "Static",                 "chorus.rate.static"                },
             { NULL, NULL }
         };
 
@@ -347,7 +348,7 @@ namespace lsp
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_mono,
-            E_DUMP_STATE | E_INLINE_DISPLAY,
+            E_DUMP_STATE | E_INLINE_DISPLAY | E_KVT_SYNC,
             chorus_mono_ports,
             "effects/chorus.xml",
             "effects/chorus",
@@ -374,7 +375,7 @@ namespace lsp
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_stereo,
-            E_DUMP_STATE | E_INLINE_DISPLAY,
+            E_DUMP_STATE | E_INLINE_DISPLAY | E_KVT_SYNC,
             chorus_stereo_ports,
             "effects/chorus.xml",
             "effects/chorus",

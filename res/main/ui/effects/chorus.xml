@@ -338,8 +338,9 @@
 			<void hexpand="true" vexpand="false" bg.color="bg_schema"/>
 			<void pad.h="2" bg.color="bg" hreduce="true"/>
 			<cell cols="3">
-				<hbox vexpand="false" bg.color="bg_schema" pad.h="6">
+				<hbox spacing="6" vexpand="false" bg.color="bg_schema" pad.h="6">
 					<button id="reset" text="actions.restart" ui:inject="Button_yellow" height="19" pad.v="4"/>
+					<button id="freeze" text="actions.freeze" ui:inject="Button_yellow" height="19" pad.v="4"/>
 					<void hexpand="true"/>
 					<button id="lfo2" text="labels.separate" ui:inject="Button_cyan" height="19" pad.v="4"/>
 				</hbox>

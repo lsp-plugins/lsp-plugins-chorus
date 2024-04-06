@@ -133,6 +133,13 @@ namespace lsp
                 OSC_LAST
             };
 
+            enum osc_mode_t
+            {
+                MODE_RATE,
+                MODE_TEMPO,
+                MODE_STATIC
+            };
+
         } chorus;
 
         // Plugin type metadata

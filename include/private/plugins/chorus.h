@@ -150,6 +150,7 @@ namespace lsp
                 size_t                  nFeedDelay;         // Feed-back delay
                 bool                    bMS;                // Mid/Side mode
                 bool                    bMono;              // Mono mode
+                bool                    bUpdateVoices;      // Need voices update flag
 
                 plug::IPort            *pBypass;            // Bypass switch
                 plug::IPort            *pMono;              // Mono compatibility test

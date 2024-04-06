@@ -161,6 +161,7 @@ namespace lsp
 
             bMS                 = false;
             bMono               = false;
+            bUpdateVoices       = true;
 
             // Cleanup pointers to ports
             pBypass             = NULL;
@@ -496,7 +497,6 @@ namespace lsp
             sReset.submit(pReset->value());
 
             // Pre-compute several attributes
-            bool update_voices      = false;
             const float in_gain     = pInGain->value();
             const float out_gain    = pOutGain->value();
             const bool bypass       = pBypass->value() >= 0.5f;
@@ -505,29 +505,48 @@ namespace lsp
             const bool mid_side     = (pMS != NULL) ? pMS->value() >= 0.5f : false;
             float crossfade         = pCrossfade->value() * 0.01f;
 
-            // Compute LFO rate
-            float rate              = pRate->value();
-            if (pTimeMode->value() >= 1.0f)
+            // Compute LFO rate and phase
+            float rate              = 0.0f;
+            uint32_t mode           = pTimeMode->value();
+            nOldPhaseStep           = nPhaseStep;
+
+            switch (mode)
             {
-                // Use tempo instead of rate
-                float tempo             = (pTempoSync->value() >= 0.5f) ? pWrapper->position()->beatsPerMinute : pTempo->value();
-                rate                    =
-                    lsp_limit(
-                        dspu::time_signature_to_frequency(pFraction->value(), tempo),
-                        meta::chorus::RATE_MIN,
-                        meta::chorus::RATE_MAX);
+                case meta::chorus::MODE_TEMPO:
+                {
+                    float tempo             = (pTempoSync->value() >= 0.5f) ? pWrapper->position()->beatsPerMinute : pTempo->value();
+                    rate                    =
+                        lsp_limit(
+                            dspu::time_signature_to_frequency(pFraction->value(), tempo),
+                            meta::chorus::RATE_MIN,
+                            meta::chorus::RATE_MAX) / float(nRealSampleRate);
+                    nPhaseStep              = float(PHASE_MAX) * rate;
+                    break;
+                }
+
+                case meta::chorus::MODE_STATIC:
+                {
+                    rate                    = fRate;
+                    nPhaseStep              = 0;
+                    nPhase                  = 0;
+                    break;
+                }
+
+                case meta::chorus::MODE_RATE:
+                default:
+                    rate                    = pRate->value() / float(nRealSampleRate);
+                    nPhaseStep              = float(PHASE_MAX) * rate;
+                    break;
             }
-            rate                   /= nRealSampleRate;
+
             if (fRate != rate)
-                update_voices           = true;
+                bUpdateVoices           = true;
 
             // Update common parameters
             const float dry_gain    = pDryGain->value();
             const float wet_gain    = (pInvPhase->value() < 0.5f) ? pWetGain->value() : -pWetGain->value();
             const float drywet      = pDryWet->value() * 0.01f;
 
-            nOldPhaseStep           = nPhaseStep;
-            nPhaseStep              = float(PHASE_MAX) * rate;
             fOldInGain              = fInGain;
             fOldDryGain             = fDryGain;
             fOldWetGain             = fWetGain;
@@ -548,7 +567,7 @@ namespace lsp
             const float depth       = pDepth->value();
             if ((depth != fDepth) || (srate_changed))
             {
-                update_voices           = true;
+                bUpdateVoices           = true;
                 fDepth                  = depth;
                 nOldDepth               = nDepth;
                 nDepth                  = dspu::millis_to_samples(nRealSampleRate, depth);
@@ -578,7 +597,7 @@ namespace lsp
 
                 nLfo                    = n_lfo;
                 nVoices                 = voices;
-                update_voices           = true;
+                bUpdateVoices           = true;
             }
 
             // Check that LFO parameters have changed
@@ -593,7 +612,7 @@ namespace lsp
                 if (lfo->fOverlap != overlap)
                 {
                     lfo->fOverlap           = overlap;
-                    update_voices           = true;
+                    bUpdateVoices           = true;
                     lfo->bSyncMesh          = true;
                 }
 
@@ -607,13 +626,15 @@ namespace lsp
                     lfo->nOldDelay          = lfo->nDelay;
                     lfo->nDelay             = dspu::millis_to_samples(nRealSampleRate, delay);
                     lfo->fDelay             = delay;
-                    update_voices           = true;
+                    bUpdateVoices           = true;
                 }
             }
 
             // Update voices if required
-            if (update_voices)
+            if (bUpdateVoices)
             {
+                bUpdateVoices = false;
+
                 for (size_t i=0; i<nLfo; ++i)
                 {
                     lfo_t *lfo              = &vLfo[i];
@@ -1312,6 +1333,7 @@ namespace lsp
             v->write("nFeedDelay", nFeedDelay);
             v->write("bMS", bMS);
             v->write("bMono", bMono);
+            v->write("bUpdateVoices", bUpdateVoices);
 
             v->write("pBypass", pBypass);
             v->write("pMono", pMono);

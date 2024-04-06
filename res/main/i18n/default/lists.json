@@ -24,6 +24,7 @@
 		},
 		"rate": {
 			"rate": "Rate",
+			"static": "Static",
 			"tempo": "Tempo"
 		}
 	}
