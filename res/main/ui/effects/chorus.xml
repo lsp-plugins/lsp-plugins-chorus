@@ -166,91 +166,90 @@
 
 			<!-- LFO 2 Graph -->
 			<ui:with bg.bright="!:lfo2 ? :const_bg_darken : 1.0" bright="!:lfo2 ? 0.75 : 1.0">
-			<group ui:inject="GraphGroup" ipadding="0" expand="true" fill="true" text="labels.graphs.LFO_2">
-				<graph width.min="210" expand="true" height.min="210">
-					<origin hpos="-1" vpos="1" visibility="false"/>
-					<origin hpos="-1" vpos="-1" visibility="false"/>
+				<group ui:inject="GraphGroup" ipadding="0" expand="true" fill="true" text="labels.graphs.LFO_2">
+					<graph width.min="210" expand="true" height.min="210">
+						<origin hpos="-1" vpos="1" visibility="false"/>
+						<origin hpos="-1" vpos="-1" visibility="false"/>
 
-					<!-- Grid -->
-					<ui:with color="graph_alt_2">
-						<marker v="45"/>
-						<marker v="135"/>
-						<marker v="225"/>
-						<marker v="315"/>
-						<marker v="0.125" ox="1" oy="0"/>
-						<marker v="0.375" ox="1" oy="0"/>
-						<marker v="0.625" ox="1" oy="0"/>
-						<marker v="0.875" ox="1" oy="0"/>
-					</ui:with>
+						<!-- Grid -->
+						<ui:with color="graph_alt_2">
+							<marker v="45"/>
+							<marker v="135"/>
+							<marker v="225"/>
+							<marker v="315"/>
+							<marker v="0.125" ox="1" oy="0"/>
+							<marker v="0.375" ox="1" oy="0"/>
+							<marker v="0.625" ox="1" oy="0"/>
+							<marker v="0.875" ox="1" oy="0"/>
+						</ui:with>
 
-					<ui:with color="graph_alt_1">
-						<marker v="90"/>
-						<marker v="270"/>
-						<marker v="0.25" ox="1" oy="0"/>
-						<marker v="0.75" ox="1" oy="0"/>
-					</ui:with>
+						<ui:with color="graph_alt_1">
+							<marker v="90"/>
+							<marker v="270"/>
+							<marker v="0.25" ox="1" oy="0"/>
+							<marker v="0.75" ox="1" oy="0"/>
+						</ui:with>
 
-					<ui:with color="graph_sec">
-						<marker v="180"/>
-						<marker v="0.5" ox="1" oy="0"/>
-					</ui:with>
+						<ui:with color="graph_sec">
+							<marker v="180"/>
+							<marker v="0.5" ox="1" oy="0"/>
+						</ui:with>
 
-					<!-- Axes -->
-					<axis min="0" max="360" angle="1.5" visibility="false"/>
-					<axis min="0" max="1" angle="0" visibility="false"/>
-					<axis o="1" min="0" max="100" angle="0.5" visibility="false"/>
+						<!-- Axes -->
+						<axis min="0" max="360" angle="1.5" visibility="false"/>
+						<axis min="0" max="1" angle="0" visibility="false"/>
+						<axis o="1" min="0" max="100" angle="0.5" visibility="false"/>
 
-					<!-- Mesh -->
-					<ui:for id="i" first="1" count="8">
-						<mesh id="lgr_2" x.index="0" y.index="${i}" width="3" color="graph_mesh" visibility=":lfo2" smooth="true"/>
-					</ui:for>
-
-					<!-- Markers -->
-					<marker o="1" ox="2" oy="1" zero="0" id="xfade" editable="true" pointer="vsize" color="graph_marker_cycle" hcolor="graph_marker_cycle" color.a="0.5" hcolor.a="0.5"/>
-
-					<ui:if test="!(ex :in_r)">
-						<ui:for id="i" first="1" count="16">
-							<marker v=":vms_${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65" visibility=":vml_${i} ieq 2"/>
+						<!-- Mesh -->
+						<ui:for id="i" first="1" count="8">
+							<mesh id="lgr_2" x.index="0" y.index="${i}" width="3" color="graph_mesh" visibility=":lfo2" smooth="true"/>
 						</ui:for>
-					</ui:if>
-					<ui:if test="ex :in_r">
-						<ui:for id="i" first="1" count="16">
-							<marker v=":vms_${i}l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65" visibility=":vml_${i}l ieq 2"/>
-						</ui:for>
-						<ui:for id="i" first="1" count="16">
-							<marker v=":vms_${i}r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65" visibility=":vml_${i}r ieq 2"/>
-						</ui:for>
-					</ui:if>
 
-					<!-- Dots -->
-					<ui:if test="!(ex :in_r)">
-						<ui:for id="i" first="1" count="16">
-							<dot x.id="vmp_${i}" y.id="vms_${i}" color="graph_mesh" bcolor="graph_mesh" visibility=":vml_${i} ieq 2"/>
-						</ui:for>
-					</ui:if>
-					<ui:if test="ex :in_r">
-						<ui:for id="i" first="1" count="16">
-							<dot x.id="vmp_${i}l" y.id="vms_${i}l" color="(:ms) ? 'mid' : 'left'" bcolor="(:ms) ? 'mid' : 'left'" visibility=":vml_${i}l ieq 2"/>
-						</ui:for>
-						<ui:for id="i" first="1" count="16">
-							<dot x.id="vmp_${i}r" y.id="vms_${i}r" color="(:ms) ? 'side' : 'right'" bcolor="(:ms) ? 'side' : 'right'" visibility=":vml_${i}r ieq 2"/>
-						</ui:for>
-					</ui:if>
+						<!-- Markers -->
+						<marker o="1" ox="2" oy="1" zero="0" id="xfade" editable="true" pointer="vsize" color="graph_marker_cycle" hcolor="graph_marker_cycle" color.a="0.5" hcolor.a="0.5"/>
 
-					<!-- text -->
-					<text x="0" y="0" halign="1" valign="-1" text="graph.values.min"/>
-					<text x="0" y="1" halign="-1" valign="-1" text="graph.values.max"/>
-					<text x="0" y="0.5" halign="0" valign="-1" text="graph.axis.depth"/>
-					<ui:for id="i" first="1" count="7">
-						<text x="${:i*45}" y="0" halign="1" valign="1" text="graph.values.x:deg" text:value="${:i*45}"/>
-					</ui:for>
-					<text x="360" y="0" halign="1" valign="1" text="graph.axis.phase"/>
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}" ox="1" oy="0" color="graph_mesh" color.a="0.65" visibility=":vml_${i} ieq 2"/>
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}l" ox="1" oy="0" color="(:ms) ? 'mid' : 'left'" color.a="0.65" visibility=":vml_${i}l ieq 2"/>
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<marker v=":vms_${i}r" ox="1" oy="0" color="(:ms) ? 'side' : 'right'" color.a="0.65" visibility=":vml_${i}r ieq 2"/>
+							</ui:for>
+						</ui:if>
 
-					<text x="360.0 - 3.6*:xfade" y="1" halign="-1" valign="1" text="labels.lfo.crossfade" color="graph_marker_cycle" color.a="0.5"/>
-				</graph>
-			</group>
-</ui:with>
+						<!-- Dots -->
+						<ui:if test="!(ex :in_r)">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}" y.id="vms_${i}" color="graph_mesh" bcolor="graph_mesh" visibility=":vml_${i} ieq 2"/>
+							</ui:for>
+						</ui:if>
+						<ui:if test="ex :in_r">
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}l" y.id="vms_${i}l" color="(:ms) ? 'mid' : 'left'" bcolor="(:ms) ? 'mid' : 'left'" visibility=":vml_${i}l ieq 2"/>
+							</ui:for>
+							<ui:for id="i" first="1" count="16">
+								<dot x.id="vmp_${i}r" y.id="vms_${i}r" color="(:ms) ? 'side' : 'right'" bcolor="(:ms) ? 'side' : 'right'" visibility=":vml_${i}r ieq 2"/>
+							</ui:for>
+						</ui:if>
 
+						<!-- text -->
+						<text x="0" y="0" halign="1" valign="-1" text="graph.values.min"/>
+						<text x="0" y="1" halign="-1" valign="-1" text="graph.values.max"/>
+						<text x="0" y="0.5" halign="0" valign="-1" text="graph.axis.depth"/>
+						<ui:for id="i" first="1" count="7">
+							<text x="${:i*45}" y="0" halign="1" valign="1" text="graph.values.x:deg" text:value="${:i*45}"/>
+						</ui:for>
+						<text x="360" y="0" halign="1" valign="1" text="graph.axis.phase"/>
+
+						<text x="360.0 - 3.6*:xfade" y="1" halign="-1" valign="1" text="labels.lfo.crossfade" color="graph_marker_cycle" color.a="0.5"/>
+					</graph>
+				</group>
+			</ui:with>
 
 			<void pad.h="2" bg.color="bg" hreduce="true"/>
 
@@ -648,6 +647,35 @@
 					<cell cols="2">
 						<hsep pad.v="2" bg.color="bg" vreduce="true"/>
 					</cell>
+
+					<!-- feedback -->
+					<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
+						<cell cols="2"><void vexpand="true"/></cell>
+						<cell cols="2">
+							<hbox pad.v="4" pad.h="6">
+								<button id="fb_on" width.min="134" text="labels.feedback" hfill="true" ui:inject="Button_cyan" height="19"/>
+								<button id="fphase" width.min="134" text="labels.signal.phase" hfill="true" pad.l="6" ui:inject="Button_orange" height="19"/>
+							</hbox>
+						</cell>
+						<hbox fill="false" pad.v="4">
+							<knob id="fgain" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+							<vbox width.min="64">
+								<label text="labels.gain"/>
+								<value id="fgain" width="48" same_line="true"/>
+							</vbox>
+						</hbox>
+						<hbox fill="false" pad.v="4">
+							<knob id="fdelay" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+							<vbox width.min="64">
+								<label text="labels.delay"/>
+								<value id="fdelay" width="48" same_line="true"/>
+							</vbox>
+						</hbox>
+						<cell cols="2"><void vexpand="true"/></cell>
+					</ui:with>
+
+					<cell cols="2"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+
 					<!-- HPF and LPF -->
 					<cell cols="2">
 						<grid rows="6" cols="3" transpose="true" vexpand="true">
@@ -674,32 +702,6 @@
 
 					</cell>
 
-					<cell cols="2"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
-					<!-- feedback -->
-					<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
-						<cell cols="2"><void vexpand="true"/></cell>
-						<cell cols="2">
-							<hbox pad.v="4" pad.h="6">
-								<button id="fb_on" width.min="134" text="labels.feedback" hfill="true" ui:inject="Button_cyan" height="19"/>
-								<button id="fphase" width.min="134" text="labels.signal.phase" hfill="true" pad.l="6" ui:inject="Button_orange" height="19"/>
-							</hbox>
-						</cell>
-						<hbox fill="false" pad.v="4">
-							<knob id="fgain" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
-							<vbox width.min="64">
-								<label text="labels.gain"/>
-								<value id="fgain" width="48" same_line="true"/>
-							</vbox>
-						</hbox>
-						<hbox fill="false" pad.v="4">
-							<knob id="fdelay" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
-							<vbox width.min="64">
-								<label text="labels.delay"/>
-								<value id="fdelay" width="48" same_line="true"/>
-							</vbox>
-						</hbox>
-						<cell cols="2"><void vexpand="true"/></cell>
-					</ui:with>
 				</grid>
 			</group>
 			<!-- Separator -->
