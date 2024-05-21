@@ -563,7 +563,7 @@ namespace lsp
 
             // LFO setup
             const size_t n_lfo      = (pLfo2Enable->value() >= 0.5f) ? 2 : 1;
-            const size_t voices     = pVoices->value() + 2;
+            const size_t voices     = lsp_min(pVoices->value() + 2, meta::chorus::VOICES_MAX);
             const float depth       = pDepth->value();
             if ((depth != fDepth) || (srate_changed))
             {
@@ -1144,8 +1144,10 @@ namespace lsp
                         const float lx = lv->nOutDelay * norm_delay;
                         const float rx = rv->nOutDelay * norm_delay;
 
-                        cv->radial_gradient(lx, ly, lc, lc, 8);
-                        cv->radial_gradient(rx, ry, rc, rc, 8);
+                        Color lca(lc, 0.9f), rca(rc, 0.9f);
+
+                        cv->radial_gradient(lx, ly, lc, lca, 8);
+                        cv->radial_gradient(rx, ry, rc, rca, 8);
 
                         cv->set_color_rgb(0);
                         cv->circle(lx, ly, 4);
@@ -1190,7 +1192,8 @@ namespace lsp
                         const voice_t *v = &lfo->vVoices[j];
                         const float x = v->nOutDelay * norm_delay;
 
-                        cv->radial_gradient(x, y, c, c, 8);
+                        Color ca(c, 0.9f);
+                        cv->radial_gradient(x, y, c, ca, 8);
 
                         cv->set_color_rgb(0);
                         cv->circle(x, y, 4);
