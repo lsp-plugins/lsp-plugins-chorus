@@ -303,13 +303,18 @@
 
 					<!-- Difference -->
 					<cell cols="3">
-						<hbox fill="false" pad.v="4" pad.h="6">
-							<knob id="lcp_1" pad.r="6"/>
-							<vbox width.min="64">
-								<label text="labels.lfo.difference"/>
-								<value id="lcp_1" width="48" same_line="true"/>
-							</vbox>
-						</hbox>
+						<ui:if test="ex :lcp_1">
+							<hbox fill="false" pad.v="4" pad.h="6">
+								<knob id="lcp_1" pad.r="6"/>
+								<vbox width.min="64">
+									<label text="labels.lfo.difference"/>
+									<value id="lcp_1" width="48" same_line="true"/>
+								</vbox>
+							</hbox>
+						</ui:if>
+						<ui:if test="!(ex :lcp_1)">
+							<void height.min="32" pad.v="6" />
+						</ui:if>
 					</cell>
 
 					<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
@@ -554,13 +559,18 @@
 
 						<!-- Difference -->
 						<cell cols="3">
-							<hbox fill="false" pad.v="4" pad.h="6">
-								<knob id="lcp_2" pad.r="6" scolor=":lfo2 ? 'kscale' : 'cycle_inactive'"/>
-								<vbox width.min="64">
-									<label text="labels.lfo.difference"/>
-									<value id="lcp_2" width="48" same_line="true"/>
-								</vbox>
-							</hbox>
+							<ui:if test="ex :lcp_2">
+								<hbox fill="false" pad.v="4" pad.h="6">
+									<knob id="lcp_2" pad.r="6" scolor=":lfo2 ? 'kscale' : 'cycle_inactive'"/>
+									<vbox width.min="64">
+										<label text="labels.lfo.difference"/>
+										<value id="lcp_2" width="48" same_line="true"/>
+									</vbox>
+								</hbox>
+							</ui:if>
+							<ui:if test="!(ex :lcp_2)">
+								<void height.min="32" pad.v="6" />
+							</ui:if>
 						</cell>
 
 						<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
