@@ -166,7 +166,6 @@ namespace lsp
             VOICE_METER_MONO(id "l", label " left"), \
             VOICE_METER_MONO(id "r", label " right")
 
-        // NOTE: Port identifiers should not be longer than 7 characters as it will overflow VST2 parameter name buffers
         static const port_t chorus_mono_ports[] =
         {
             // Input and output audio ports
@@ -239,7 +238,6 @@ namespace lsp
             PORTS_END
         };
 
-        // NOTE: Port identifiers should not be longer than 7 characters as it will overflow VST2 parameter name buffers
         static const port_t chorus_stereo_ports[] =
         {
             // Input and output audio ports
@@ -325,7 +323,7 @@ namespace lsp
             "chorus",
             "Plugin Template",
             B_EFFECTS,
-            "", // TODO: provide ID of the video on YouTube
+            "SSQaXDN9yXI",
             "This plugin allows to simulate the chorus effect"
         };
 
@@ -348,7 +346,7 @@ namespace lsp
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_mono,
-            E_DUMP_STATE | E_INLINE_DISPLAY | E_KVT_SYNC,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_mono_ports,
             "effects/chorus.xml",
             "effects/chorus",
@@ -375,7 +373,7 @@ namespace lsp
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_stereo,
-            E_DUMP_STATE | E_INLINE_DISPLAY | E_KVT_SYNC,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_stereo_ports,
             "effects/chorus.xml",
             "effects/chorus",
