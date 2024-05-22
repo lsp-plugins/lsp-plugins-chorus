@@ -321,7 +321,7 @@ namespace lsp
         const meta::bundle_t chorus_bundle =
         {
             "chorus",
-            "Plugin Template",
+            "Chorus",
             B_EFFECTS,
             "SSQaXDN9yXI",
             "This plugin allows to simulate the chorus effect"
