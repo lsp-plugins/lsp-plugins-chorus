@@ -249,7 +249,7 @@
 				</hbox>
 			</cell>
 			<void pad.h="2" bg.color="bg" hreduce="true"/>
-			<hbox vexpand="false" bg.color="bg_schema" pad.h="6">
+			<hbox hexpand="true" vexpand="false" bg.color="bg_schema" pad.h="6">
 				<void hexpand="true"/>
 				<label text="labels.oversampling" pad.r="4"/>
 				<combo id="ovs" pad.v="4"/>
