@@ -25,7 +25,7 @@
 
 #define LSP_PLUGINS_CHORUS_VERSION_MAJOR       1
 #define LSP_PLUGINS_CHORUS_VERSION_MINOR       0
-#define LSP_PLUGINS_CHORUS_VERSION_MICRO       1
+#define LSP_PLUGINS_CHORUS_VERSION_MICRO       2
 
 #define LSP_PLUGINS_CHORUS_VERSION  \
     LSP_MODULE_VERSION( \
@@ -321,7 +321,7 @@ namespace lsp
         const meta::bundle_t chorus_bundle =
         {
             "chorus",
-            "Plugin Template",
+            "Chorus",
             B_EFFECTS,
             "SSQaXDN9yXI",
             "This plugin allows to simulate the chorus effect"
@@ -335,14 +335,17 @@ namespace lsp
             "CH1M",
             &developers::v_sadovnikov,
             "chorus_mono",
-            LSP_LV2_URI("chorus_mono"),
-            LSP_LV2UI_URI("chorus_mono"),
-            "ch1m",
-            LSP_VST3_UID("ch1m    ch1m"),
-            LSP_VST3UI_UID("ch1m    ch1m"),
-            LSP_LADSPA_CHORUS_BASE + 0,
-            LSP_LADSPA_URI("chorus_mono"),
-            LSP_CLAP_URI("chorus_mono"),
+            {
+                LSP_LV2_URI("chorus_mono"),
+                LSP_LV2UI_URI("chorus_mono"),
+                "ch1m",
+                LSP_VST3_UID("ch1m    ch1m"),
+                LSP_VST3UI_UID("ch1m    ch1m"),
+                LSP_LADSPA_CHORUS_BASE + 0,
+                LSP_LADSPA_URI("chorus_mono"),
+                LSP_CLAP_URI("chorus_mono"),
+                LSP_GST_UID("chorus_mono"),
+            },
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_mono,
@@ -362,14 +365,17 @@ namespace lsp
             "CH1S",
             &developers::v_sadovnikov,
             "chorus_stereo",
-            LSP_LV2_URI("chorus_stereo"),
-            LSP_LV2UI_URI("chorus_stereo"),
-            "ch1s",
-            LSP_VST3_UID("ch1s    ch1s"),
-            LSP_VST3UI_UID("ch1s    ch1s"),
-            LSP_LADSPA_CHORUS_BASE + 1,
-            LSP_LADSPA_URI("chorus_stereo"),
-            LSP_CLAP_URI("chorus_stereo"),
+            {
+                LSP_LV2_URI("chorus_stereo"),
+                LSP_LV2UI_URI("chorus_stereo"),
+                "ch1s",
+                LSP_VST3_UID("ch1s    ch1s"),
+                LSP_VST3UI_UID("ch1s    ch1s"),
+                LSP_LADSPA_CHORUS_BASE + 1,
+                LSP_LADSPA_URI("chorus_stereo"),
+                LSP_CLAP_URI("chorus_stereo"),
+                LSP_GST_UID("chorus_stereo"),
+            },
             LSP_PLUGINS_CHORUS_VERSION,
             plugin_classes,
             clap_features_stereo,
