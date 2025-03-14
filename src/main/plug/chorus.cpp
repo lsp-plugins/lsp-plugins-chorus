@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -1252,8 +1252,6 @@ namespace lsp
                     v->begin_object(s, sizeof(voice_t));
                     {
                         v->write("nPhase", s->nPhase);
-                        v->write("nOvlDelay", s->nOvlDelay);
-                        v->write("nOvlDepth", s->nOvlDepth);
                         v->write("fNormShift", s->fNormShift);
                         v->write("fNormScale", s->fNormScale);
                         v->write("fOutPhase", s->fOutPhase);

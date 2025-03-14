@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -48,8 +48,6 @@ namespace lsp
                 typedef struct voice_t
                 {
                     uint32_t                nPhase;             // Phase shift relative to global LFO
-                    float                   nOvlDelay;          // Overlapping delay shift in samples
-                    float                   nOvlDepth;          // Overlapping depth
                     float                   fNormShift;         // Normalized shift
                     float                   fNormScale;         // Normalized scale
                     float                   fOutPhase;          // Output phase value
