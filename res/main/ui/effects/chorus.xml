@@ -1,7 +1,6 @@
 <plugin resizable="true">
 	<hbox>
-<grid rows="5" cols="7" hexpand="true">
-
+		<grid rows="5" cols="7" hexpand="true">
 			<!-- Row 1 -->
 			<!-- Rate, Tempo -->
 			<hbox hexpand="false" bg.color="bg_schema">

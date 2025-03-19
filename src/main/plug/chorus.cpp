@@ -223,7 +223,7 @@ namespace lsp
                 szof_voices +           // vVoices
                 buf_sz +                // vBuffer
                 mesh_buf_sz +           // vLfoPhase
-                2 * mesh_buf_sz +       // lfo_t::vBuffer
+                2 * mesh_buf_sz +       // lfo_t::vLfoMesh
                 nChannels * buf_sz;     // channel_t::vBuffer
 
             // Allocate memory-aligned data
