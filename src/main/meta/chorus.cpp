@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -178,12 +178,12 @@ namespace lsp
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
             COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
+            LOG_CONTROL("hpf", "High-pass filter frequency", "HPF freq", U_HZ, chorus::HPF),
             COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", "LPF freq", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
-            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
+            LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
             CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
@@ -252,12 +252,12 @@ namespace lsp
             SWITCH("sphase", "Signal phase switch", 0.0f),
             COMBO("ovs", "Oversampling", 0, oversampling_mode),
             COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
+            LOG_CONTROL("hpf", "High-pass filter frequency", "HPF freq", U_HZ, chorus::HPF),
             COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", "LPF freq", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
-            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
+            LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
             CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
             CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
             CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
