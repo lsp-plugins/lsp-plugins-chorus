@@ -3,6 +3,7 @@
 *******************************************************************************
 
 === 1.0.7 ===
+* Significantly reduced LFO noise.
 * Updated build scripts and dependencies.
 
 === 1.0.6 ===
