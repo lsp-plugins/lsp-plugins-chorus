@@ -157,6 +157,8 @@ namespace lsp
             fWetGain            = GAIN_AMP_M_6_DB;
             fOldFeedGain        = 0.0f;
             fFeedGain           = 0.0f;
+            fOldFeedDrive       = 0.0f;
+            fFeedDrive          = 0.0f;
             nOldFeedDelay       = 0;
             nFeedDelay          = 0;
 
@@ -190,6 +192,7 @@ namespace lsp
 
             pFeedOn             = NULL;
             pFeedGain           = NULL;
+            pFeedDrive          = NULL;
             pFeedDelay          = NULL;
             pFeedPhase          = NULL;
 
@@ -352,6 +355,7 @@ namespace lsp
             lsp_trace("Binding feedback settings");
             BIND_PORT(pFeedOn);
             BIND_PORT(pFeedGain);
+            BIND_PORT(pFeedDrive);
             BIND_PORT(pFeedDelay);
             BIND_PORT(pFeedPhase);
 
@@ -486,10 +490,12 @@ namespace lsp
             const float in_gain     = pInGain->value();
             const float out_gain    = pOutGain->value();
             const bool bypass       = pBypass->value() >= 0.5f;
-            bool fb_on              = pFeedOn->value() >= 0.5f;
-            float feed_gain         = (fb_on) ? pFeedGain->value() : 0.0f;
+            const bool fb_on        = pFeedOn->value() >= 0.5f;
+            const float feed_gain   = (fb_on) ? pFeedGain->value() : 0.0f;
+            const float feed_drive  = pFeedDrive->value();
+            const float feed_phase  = pFeedPhase->value() >= 0.5f;
             const bool mid_side     = (pMS != NULL) ? pMS->value() >= 0.5f : false;
-            float crossfade         = pCrossfade->value() * 0.01f;
+            const float crossfade   = pCrossfade->value() * 0.01f;
 
             // Compute LFO rate and phase
             float rate              = 0.0f;
@@ -542,7 +548,9 @@ namespace lsp
             nOldFeedDelay           = nFeedDelay;
             nFeedDelay              = dspu::millis_to_samples(srate, pFeedDelay->value());
             fOldFeedGain            = fFeedGain;
-            fFeedGain               = (pFeedPhase->value() >= 0.5f) ? -feed_gain : feed_gain;
+            fFeedGain               = (feed_phase) ? -feed_gain : feed_gain;
+            fOldFeedDrive           = fFeedDrive;
+            fFeedDrive              = (feed_phase) ? -feed_drive : feed_drive;
             nCrossfade              = float(PHASE_MAX) * crossfade * 2;
             fCrossfade              = PHASE_COEFF * (1.0f - crossfade);
             pCrossfadeFunc          = (int(pCrossfadeType->value()) == 0) ? dspu::lerp : dspu::qlerp;
@@ -817,9 +825,14 @@ namespace lsp
                     // Process each sample
                     for (size_t i=0; i<up_to_do; ++i)
                     {
-                        const float c_sample    = vBuffer[i];
                         const float s           = i * k_up_to_do;
+                        const float fb_delay    = dspu::ilerp(nOldFeedDelay, nFeedDelay, s);
+                        const float fb_gain     = dspu::lerp(fOldFeedGain, fFeedGain, s);
+                        const float fb_drive    = dspu::lerp(fOldFeedDrive, fFeedDrive, s);
+
+                        const float c_sample    = vBuffer[i];
                         float p_sample          = 0.0f;
+                        float fb_p_sample       = 0.0f;
 
                         c->sRing.append(c_sample);
 
@@ -841,6 +854,7 @@ namespace lsp
                                 float c_func            = v->fNormScale * lfo->pFunc(c_phase) + v->fNormShift;
                                 float c_shift           = lfo_delay + lfo_depth * c_func;
                                 float c_dsample         = c->sRing.lerp_get(c_shift);
+                                float fb_dsample;
 
                                 v->fOutPhase            = o_phase;
                                 v->fOutShift            = c_func;
@@ -849,16 +863,22 @@ namespace lsp
                                 // Perform cross-fade if required
                                 if (i_phase < nCrossfade)
                                 {
-                                    float mix               = float(i_phase) / float(nCrossfade);
+                                    const float mix         = float(i_phase) / float(nCrossfade);
                                     i_phase                 = i_phase + PHASE_MAX;
                                     c_phase                 = i_phase * fCrossfade * lfo->fArg[0] + lfo->fArg[1];
                                     c_func                  = v->fNormScale * lfo->pFunc(c_phase) + v->fNormShift;
                                     c_shift                 = lfo_delay + lfo_depth * c_func;
-                                    c_dsample               = pCrossfadeFunc(c->sRing.lerp_get(c_shift), c_dsample, mix);
+
+                                    const float x_dsample   = c->sRing.lerp_get(c_shift);
+                                    c_dsample               = pCrossfadeFunc(x_dsample, c_dsample, mix);
+                                    fb_dsample              = dspu::lerp(x_dsample, c_dsample, mix);
                                 }
+                                else
+                                    fb_dsample              = c_dsample;
 
                                 // Compute the sample
                                 p_sample               += c_dsample;
+                                fb_p_sample            += fb_dsample;
                             }
                         }
 
@@ -866,11 +886,12 @@ namespace lsp
                         ssize_t c_feed_delay    = dspu::ilerp(vLfo[0].nOldDelay, vLfo[0].nDelay, s);
                         if (nLfo > 1)
                             c_feed_delay            = lsp_min(c_feed_delay, dspu::ilerp(vLfo[1].nOldDelay, vLfo[1].nDelay, s));
-                        size_t c_fbshift        = c_feed_delay + dspu::ilerp(nOldFeedDelay, nFeedDelay, s) - 1;
-                        float fb_sample         = c->sFeedback.get(c_fbshift);
-                        p_sample               += fb_sample * dspu::lerp(fOldFeedGain, fFeedGain, s);
+                        size_t c_fbshift        = c_feed_delay + fb_delay;
+                        float fb_sample         = c->sFeedback.lerp_get(c_fbshift);
+                        p_sample               += fb_sample * fb_gain;
+                        fb_p_sample            += fb_sample * fb_gain;
 
-                        c->sFeedback.append(p_sample);
+                        c->sFeedback.append(vBuffer[i] * fb_drive + fb_p_sample);
 
                         // Update buffer sample
                         vBuffer[i]              = p_sample;
@@ -945,6 +966,7 @@ namespace lsp
                 nOldPhaseStep       = nPhaseStep;
                 nOldDepth           = nDepth;
                 fOldFeedGain        = fFeedGain;
+                fOldFeedDrive       = fFeedDrive;
                 nOldFeedDelay       = nFeedDelay;
                 fOldInGain          = fInGain;
                 fOldDryGain         = fDryGain;
@@ -1316,6 +1338,8 @@ namespace lsp
             v->write("fWetGain", fWetGain);
             v->write("fOldFeedGain", fOldFeedGain);
             v->write("fFeedGain", fFeedGain);
+            v->write("fOldFeedDrive", fOldFeedDrive);
+            v->write("fFeedDrive", fFeedDrive);
             v->write("nOldFeedDelay", nOldFeedDelay);
             v->write("nFeedDelay", nFeedDelay);
             v->write("bMS", bMS);

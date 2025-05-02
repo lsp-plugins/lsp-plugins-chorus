@@ -75,8 +75,9 @@ $m      =   ($PAGE == 'chorus_mono') ? 'm' : 's';
 	<?php } ?>
 	<li><b>Phase</b> - the button that allows to enable phase inversion of the processed signal which is added to original one.</li>
 	<li><b>Feedback</b> - the button that switches on the feedback chain.</li>
-	<li><b>Feedback</b> - the knob that controls the amount of signal being fed back.</li>
     <li><b>Feedback Phase</b> - the button that allows to invert the polarity of the feedback signal.</li>
+	<li><b>Feedback</b> - the knob that controls the amount of signal being fed back.</li>
+	<li><b>Feedback Drive</b> - the amount of input signal driven into feed-back delay line.</li>
     <li><b>Feedback Delay</b> - the additional delay which can be applied to the feedback signal.</li>
     <li><b>HPF</b> - enables additional High-Pass Filter which filters the process signal.</li>
     <li><b>HPF frequency</b> - the knob that allows to control the cut-off frequency of the High-Pass Filter.</li>

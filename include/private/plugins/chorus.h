@@ -144,6 +144,8 @@ namespace lsp
                 float                   fWetGain;           // Wet gain
                 float                   fOldFeedGain;       // Old feedback gain
                 float                   fFeedGain;          // Feed-back gain
+                float                   fOldFeedDrive;      // Old feed-back drive
+                float                   fFeedDrive;         // Feedback drive
                 size_t                  nOldFeedDelay;      // Old feedback delay
                 size_t                  nFeedDelay;         // Feed-back delay
                 bool                    bMS;                // Mid/Side mode
@@ -175,6 +177,7 @@ namespace lsp
 
                 plug::IPort            *pFeedOn;            // Enable feedback
                 plug::IPort            *pFeedGain;          // Feedback gain
+                plug::IPort            *pFeedDrive;         // Feedback drive
                 plug::IPort            *pFeedDelay;         // Feedback delay
                 plug::IPort            *pFeedPhase;         // Feedback phase
 

@@ -674,8 +674,13 @@
 								<label text="labels.gain"/>
 								<value id="fgain" width="48" same_line="true"/>
 							</vbox>
-						</hbox>
-						<hbox fill="false" pad.v="4">
+							
+							<knob id="fdrive" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+							<vbox width.min="54">
+								<label text="labels.signal.drive"/>
+								<value id="fdrive" width="48" same_line="true"/>
+							</vbox>
+
 							<knob id="fdelay" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
 							<vbox width.min="64">
 								<label text="labels.delay"/>

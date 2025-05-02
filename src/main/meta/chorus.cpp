@@ -203,6 +203,7 @@ namespace lsp
             // Feedback chain
             SWITCH("fb_on", "Feedback on", 0),
             CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
             CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
             SWITCH("fphase", "Feedback phase switch", 0.0f),
 
@@ -277,6 +278,7 @@ namespace lsp
             // Feedback chain
             SWITCH("fb_on", "Feedback on", 0),
             CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
             CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
             SWITCH("fphase", "Feedback phase switch", 0.0f),
 
