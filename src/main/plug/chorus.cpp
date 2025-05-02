@@ -159,8 +159,8 @@ namespace lsp
             fFeedGain           = 0.0f;
             fOldFeedDrive       = 0.0f;
             fFeedDrive          = 0.0f;
-            nOldFeedDelay       = 0;
-            nFeedDelay          = 0;
+            fOldFeedDelay       = 0.0f;
+            fFeedDelay          = 0.0f;
 
             bMS                 = false;
             bMono               = false;
@@ -545,8 +545,8 @@ namespace lsp
             fInGain                 = in_gain;
             fDryGain                = (dry_gain * drywet + 1.0f - drywet) * out_gain;
             fWetGain                = wet_gain * drywet * out_gain;
-            nOldFeedDelay           = nFeedDelay;
-            nFeedDelay              = dspu::millis_to_samples(srate, pFeedDelay->value());
+            fOldFeedDelay           = fFeedDelay;
+            fFeedDelay              = dspu::millis_to_samples(srate, pFeedDelay->value());
             fOldFeedGain            = fFeedGain;
             fFeedGain               = (feed_phase) ? -feed_gain : feed_gain;
             fOldFeedDrive           = fFeedDrive;
@@ -826,7 +826,7 @@ namespace lsp
                     for (size_t i=0; i<up_to_do; ++i)
                     {
                         const float s           = i * k_up_to_do;
-                        const float fb_delay    = dspu::ilerp(nOldFeedDelay, nFeedDelay, s);
+                        const float fb_delay    = dspu::lerp(fOldFeedDelay, fFeedDelay, s);
                         const float fb_gain     = dspu::lerp(fOldFeedGain, fFeedGain, s);
                         const float fb_drive    = dspu::lerp(fOldFeedDrive, fFeedDrive, s);
 
@@ -967,7 +967,7 @@ namespace lsp
                 nOldDepth           = nDepth;
                 fOldFeedGain        = fFeedGain;
                 fOldFeedDrive       = fFeedDrive;
-                nOldFeedDelay       = nFeedDelay;
+                fOldFeedDelay       = fFeedDelay;
                 fOldInGain          = fInGain;
                 fOldDryGain         = fDryGain;
                 fOldWetGain         = fWetGain;
@@ -1340,8 +1340,8 @@ namespace lsp
             v->write("fFeedGain", fFeedGain);
             v->write("fOldFeedDrive", fOldFeedDrive);
             v->write("fFeedDrive", fFeedDrive);
-            v->write("nOldFeedDelay", nOldFeedDelay);
-            v->write("nFeedDelay", nFeedDelay);
+            v->write("fOldFeedDelay", fOldFeedDelay);
+            v->write("fFeedDelay", fFeedDelay);
             v->write("bMS", bMS);
             v->write("bMono", bMono);
             v->write("bUpdateVoices", bUpdateVoices);
