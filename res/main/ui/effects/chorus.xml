@@ -21,7 +21,7 @@
 						</align >
 						<value id="frac" width="52" sline="true"/>
 					</hbox>
-					<void fill="true" pad.b="1" height="38" visibility=":time ieq 2" />
+					<void fill="true" pad.b="1" height="38" visibility=":time ieq 2"/>
 				</vbox>
 				<vsep pad.h="2" bg.color="bg" hreduce="true"/>
 				<!-- Tempo -->
@@ -260,7 +260,6 @@
 				<hsep pad.v="2" bg.color="bg" vreduce="true"/>
 			</cell>
 
-
 			<!-- Row 5 -->
 			<!-- LFO 1 Group -->
 			<group text="labels.lfo.1" ipadding="0" width.min="29">
@@ -312,7 +311,7 @@
 							</hbox>
 						</ui:if>
 						<ui:if test="!(ex :lcp_1)">
-							<void height.min="32" pad.v="6" />
+							<void height.min="32" pad.v="6"/>
 						</ui:if>
 					</cell>
 
@@ -414,12 +413,8 @@
 						</ui:for>
 					</ui:if>
 
-					<!-- text -->
-					<!-- <text x="0" y="0" halign="1" valign="-1" text="graph.values.min"/> -->
-					<!-- <text x="0" y="1" halign="-1" valign="-1" text="graph.values.max"/> -->
-					<!-- <text x="0" y="0.5" halign="0" valign="-1" text="graph.axis.depth"/> -->
 					<ui:for id="i" first="1" count="7">
-						<text x="${:i*45}" y="0" halign="1" valign="1" text="graph.values.x:deg" text:value="${:i*45}" />
+						<text x="${:i*45}" y="0" halign="1" valign="1" text="graph.values.x:deg" text:value="${:i*45}"/>
 					</ui:for>
 					<text x="360" y="0" halign="1" valign="1" text="graph.axis.phase"/>
 
@@ -502,10 +497,6 @@
 							</ui:for>
 						</ui:if>
 
-						<!-- text -->
-						<!-- <text x="0" y="0" halign="1" valign="-1" text="graph.values.min"/> -->
-						<!-- <text x="0" y="1" halign="-1" valign="-1" text="graph.values.max"/> -->
-						<!-- <text x="0" y="0.5" halign="0" valign="-1" text="graph.axis.depth"/> -->
 						<ui:for id="i" first="1" count="7">
 							<text x="${:i*45}" y="0" halign="1" valign="1" text="graph.values.x:deg" text:value="${:i*45}"/>
 						</ui:for>
@@ -519,10 +510,11 @@
 			<void pad.h="2" bg.color="bg" hreduce="true"/>
 
 			<!-- LFO 2 Group -->
-			<group text="labels.lfo.2" ipadding="0" width.min="29" bg.bright="!:lfo2 ? :const_bg_darken : 1.0" bright="!:lfo2 ? 0.75 : 1.0">
+			<group text="labels.lfo.2" ipadding="0" width.min="29">
 				<grid rows="7" cols="3" transpose="true">
+
+					<!-- Type -->
 					<ui:with bright="(:lfo2) ? 1 : 0.75" bg.bright="(:lfo2) ? 1 : :const_bg_darken">
-						<!-- Type -->
 						<cell cols="3">
 							<vbox vfill="false" vreduce="true">
 								<label text="labels.lfo.type" pad.v="4"/>
@@ -532,9 +524,12 @@
 								</hbox>
 							</vbox>
 						</cell>
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+					</ui:with>
 
-						<!-- Overlap -->
+					<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+
+					<!-- Overlap -->
+					<ui:with bright="(:lfo2) ? 1 : 0.75" bg.bright="(:lfo2) ? 1 : :const_bg_darken">
 						<hbox fill="false" pad.v="4" pad.h="6" width.min="108">
 							<knob id="lo_2" pad.r="6" scolor=":lfo2 ? 'kscale' : 'cycle_inactive'"/>
 							<vbox width.min="64">
@@ -542,10 +537,12 @@
 								<value id="lo_2" width="48" same_line="true"/>
 							</vbox>
 						</hbox>
+					</ui:with>
 
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+					<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
 
-						<!-- Phase -->
+					<!-- Phase -->
+					<ui:with bright="(:lfo2) ? 1 : 0.75" bg.bright="(:lfo2) ? 1 : :const_bg_darken">
 						<hbox fill="false" pad.v="4" pad.h="6" width.min="108">
 							<knob id="lip_2" pad.r="6" scolor=":lfo2 ? 'kscale' : 'cycle_inactive'"/>
 							<vbox width.min="64">
@@ -553,10 +550,12 @@
 								<value id="lip_2" width="48" same_line="true"/>
 							</vbox>
 						</hbox>
+					</ui:with>
 
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+					<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
 
-						<!-- Difference -->
+					<!-- Difference -->
+					<ui:with bright="(:lfo2) ? 1 : 0.75" bg.bright="(:lfo2) ? 1 : :const_bg_darken">
 						<cell cols="3">
 							<ui:if test="ex :lcp_2">
 								<hbox fill="false" pad.v="4" pad.h="6">
@@ -568,14 +567,16 @@
 								</hbox>
 							</ui:if>
 							<ui:if test="!(ex :lcp_2)">
-								<void height.min="32" pad.v="6" />
+								<void height.min="32" pad.v="6"/>
 							</ui:if>
 						</cell>
+					</ui:with>
 
-						<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
-						<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+					<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+					<cell rows="1"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
 
-						<!-- Delay -->
+					<!-- Delay -->
+					<ui:with bright="(:lfo2) ? 1 : 0.75" bg.bright="(:lfo2) ? 1 : :const_bg_darken">
 						<hbox fill="false" pad.v="4" pad.h="6" width.min="108">
 							<knob id="ld_2" pad.r="6" scolor=":lfo2 ? 'kscale' : 'cycle_inactive'"/>
 							<vbox width.min="64">
@@ -596,7 +597,6 @@
 				</grid>
 			</group>
 		</grid>
-
 
 		<vsep vexpand="true" bg.color="bg" pad.h="2"/>
 
@@ -668,25 +668,42 @@
 								<button id="fphase" width.min="134" text="labels.signal.phase" hfill="true" pad.l="6" ui:inject="Button_orange" height="19"/>
 							</hbox>
 						</cell>
-						<hbox fill="false" pad.v="4">
-							<knob id="fgain" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
-							<vbox width.min="64">
-								<label text="labels.gain"/>
-								<value id="fgain" width="48" same_line="true"/>
-							</vbox>
-							
-							<knob id="fdrive" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
-							<vbox width.min="54">
-								<label text="labels.signal.drive"/>
-								<value id="fdrive" width="48" same_line="true"/>
-							</vbox>
+					</ui:with>
 
-							<knob id="fdelay" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
-							<vbox width.min="64">
-								<label text="labels.delay"/>
-								<value id="fdelay" width="48" same_line="true"/>
-							</vbox>
-						</hbox>
+					<grid rows="2" cols="5" vexpand="true">
+						<cell cols="8"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+						<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
+							<hbox fill="false" pad.v="4" pad.h="6">
+								<knob id="fgain" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+								<vbox width.min="4">
+									<label text="labels.gain"/>
+									<value id="fgain" width="48" same_line="true"/>
+								</vbox>
+							</hbox>
+						</ui:with>
+						<vsep pad.h="2" bg.color="bg" hreduce="true"/>
+						<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
+							<hbox fill="false" pad.v="4" pad.h="6">
+								<knob id="fdrive" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+								<vbox width.min="4">
+									<label text="labels.signal.drive"/>
+									<value id="fdrive" width="48" same_line="true"/>
+								</vbox>
+							</hbox>
+						</ui:with>
+						<vsep pad.h="2" bg.color="bg" hreduce="true"/>
+						<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
+							<hbox fill="false" pad.v="4" pad.h="6">
+								<knob id="fdelay" pad.r="6" scolor=":fb_on ? 'kscale' : 'cycle_inactive'"/>
+								<vbox width.min="4">
+									<label text="labels.delay"/>
+									<value id="fdelay" width="48" same_line="true"/>
+								</vbox>
+							</hbox>
+						</ui:with>
+					</grid>
+
+					<ui:with bright=":fb_on ? 1 : 0.75" bg.bright=":fb_on ? 1.0 : :const_bg_darken">
 						<cell cols="2"><void vexpand="true"/></cell>
 					</ui:with>
 
@@ -699,7 +716,7 @@
 								<void vexpand="true"/>
 								<label text="labels.flt.HPF" pad.h="6" pad.v="4" fill="false"/>
 								<combo id="hpm" pad.h="6"/>
-								<knob id="hpf" size="20" scolor="(:hpm) ? 'kscale' : 'kscale_inactive'"/>
+								<knob id="hpf" size="20" scolor="(:hpm) ? 'kscale' : 'kscale_inactive'" pad.t="4"/>
 								<value id="hpf" sline="true"/>
 								<void vexpand="true"/>
 							</ui:with>
@@ -710,7 +727,7 @@
 								<void vexpand="true"/>
 								<label text="labels.flt.LPF" pad.h="6" pad.v="4" fill="false"/>
 								<combo id="lpm" pad.h="6"/>
-								<knob id="lpf" size="20" scolor="(:lpm) ? 'kscale' : 'kscale_inactive'"/>
+								<knob id="lpf" size="20" scolor="(:lpm) ? 'kscale' : 'kscale_inactive'" pad.t="4"/>
 								<value id="lpf" sline="true"/>
 								<void vexpand="true"/>
 							</ui:with>
