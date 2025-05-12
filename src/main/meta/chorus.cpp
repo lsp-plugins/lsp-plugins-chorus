@@ -140,8 +140,8 @@ namespace lsp
         #define CHORUS_LFO_MONO(id, label, alias, max_voices, osc_functions, dfl_function, phase, delay) \
             COMBO("lt" id, "LFO type" label, "LFO type" alias, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, "LFO period" alias, 0, osc_periods), \
-            CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
+            CONTROL("lo" id, "LFO overlap" label, "LFO overlap" alias, U_PERCENT, chorus::OVERLAP), \
+            CONTROL_DFL("ld" id, "LFO delay" label, "LFO delay" alias, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
             CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
@@ -149,8 +149,8 @@ namespace lsp
         #define CHORUS_LFO_STEREO(id, label, alias, max_voices, osc_functions, dfl_function, phase, delay) \
             COMBO("lt" id, "LFO type" label, "LFO type" alias, dfl_function, osc_functions), \
             COMBO("lp" id, "LFO period" label, "LFO period" alias, 0, osc_periods), \
-            CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
+            CONTROL("lo" id, "LFO overlap" label, "LFO overlap" alias, U_PERCENT, chorus::OVERLAP), \
+            CONTROL_DFL("ld" id, "LFO delay" label, "LFO delay" alias, U_MSEC, chorus::LFO_DELAY, delay), \
             CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
             CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
             CYC_CONTROL("lcp" id, "Inter-channel phase" label, U_DEG, chorus::CHANNEL_PHASE), \
@@ -184,17 +184,17 @@ namespace lsp
 
             // Tempo/rate controls
             LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
-            CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
-            CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
-            CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
+            CONTROL("frac", "Time fraction", "Frac", U_BAR, chorus::FRACTION),
+            CONTROL("denom", "Time fraction denominator", "Denom", U_BAR, chorus::DENOMINATOR),
+            CONTROL("tempo", "Tempo", "Tempo", U_BPM, chorus::TEMPO),
             SWITCH("sync", "Tempo sync", "Sync tempo", 0.0f),
             COMBO("time", "Time computing method", "Method", 0, rate_type),
             TRIGGER("reset", "Reset phase to initial value", "Reset"),
 
             // LFO settings
             COMBO("voices", "Number of voices", "Voices", 2, voices_list),
-            CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
+            CONTROL("depth", "Depth", "Depth", U_MSEC, chorus::DEPTH),
+            CONTROL("xfade", "Crossfade", "Xfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", "Xfade type", 1, crossfade_type),
             SWITCH("lfo2", "Enable second LFO", "Second LFO on", 0.0f),
             CHORUS_LFO_MONO("_1", " 1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
@@ -202,9 +202,9 @@ namespace lsp
 
             // Feedback chain
             SWITCH("fb_on", "Feedback on", "Feed on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdrive", "Feedback drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            CONTROL("fgain", "Feedback gain", "Feed gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", "Feed drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
+            CONTROL("fdelay", "Feedback delay", "Feed delay", U_MSEC, chorus::FEEDBACK_DELAY),
             SWITCH("fphase", "Feedback phase switch", "Feed phase", 0.0f),
 
             // Loudness control
@@ -259,17 +259,17 @@ namespace lsp
 
             // Tempo/rate controls
             LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
-            CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
-            CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
-            CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
+            CONTROL("frac", "Time fraction", "Frac", U_BAR, chorus::FRACTION),
+            CONTROL("denom", "Time fraction denominator", "Denom", U_BAR, chorus::DENOMINATOR),
+            CONTROL("tempo", "Tempo", "Tempo", U_BPM, chorus::TEMPO),
             SWITCH("sync", "Tempo sync", "Sync tempo", 0.0f),
             COMBO("time", "Time computing method", "Method", 0, rate_type),
             TRIGGER("reset", "Reset phase to initial", "Reset"),
 
             // LFO settings
             COMBO("voices", "Number of voices", "Voices", 2, voices_list),
-            CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
+            CONTROL("depth", "Depth", "Depth", U_MSEC, chorus::DEPTH),
+            CONTROL("xfade", "Crossfade", "Xfade", U_PERCENT, chorus::CROSSFADE),
             COMBO("xtype", "Crossfade Type", "Xfade type", 1, crossfade_type),
             SWITCH("lfo2", "Enable second LFO", "Second LFO on", 0.0f),
             CHORUS_LFO_STEREO("_1", " 1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
@@ -277,9 +277,9 @@ namespace lsp
 
             // Feedback chain
             SWITCH("fb_on", "Feedback on", "Feed on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdrive", "Feedback drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            CONTROL("fgain", "Feedback gain", "Feed gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", "Feed drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
+            CONTROL("fdelay", "Feedback delay", "Feed delay", U_MSEC, chorus::FEEDBACK_DELAY),
             SWITCH("fphase", "Feedback phase switch", "Feed phase", 0.0f),
 
             // Loudness control
