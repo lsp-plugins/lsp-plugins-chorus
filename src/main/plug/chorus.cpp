@@ -870,8 +870,8 @@ namespace lsp
                                     c_shift                 = lfo_delay + lfo_depth * c_func;
 
                                     const float x_dsample   = c->sRing.lerp_get(c_shift);
-                                    c_dsample               = pCrossfadeFunc(x_dsample, c_dsample, mix);
                                     fb_dsample              = dspu::lerp(x_dsample, c_dsample, mix);
+                                    c_dsample               = pCrossfadeFunc(x_dsample, c_dsample, mix);
                                 }
                                 else
                                     fb_dsample              = c_dsample;
@@ -891,7 +891,7 @@ namespace lsp
                         p_sample               += fb_sample * fb_gain;
                         fb_p_sample            += fb_sample * fb_gain;
 
-                        c->sFeedback.append(vBuffer[i] * fb_drive + fb_p_sample);
+                        c->sFeedback.append(c_sample * fb_drive + fb_p_sample);
 
                         // Update buffer sample
                         vBuffer[i]              = p_sample;
