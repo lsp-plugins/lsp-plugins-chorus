@@ -108,6 +108,11 @@ namespace lsp
             static constexpr float  FEEDBACK_GAIN_DFL   = GAIN_AMP_M_6_DB;
             static constexpr float  FEEDBACK_GAIN_STEP  = 0.015f;
 
+            static constexpr float  FEEDBACK_DRIVE_MIN  = 0.0f;
+            static constexpr float  FEEDBACK_DRIVE_MAX  = 1.0f;
+            static constexpr float  FEEDBACK_DRIVE_DFL  = 0.0f;
+            static constexpr float  FEEDBACK_DRIVE_STEP = 0.025f;
+
             static constexpr float  FEEDBACK_DELAY_MIN  = 0.0f;
             static constexpr float  FEEDBACK_DELAY_MAX  = 5.0f;
             static constexpr float  FEEDBACK_DELAY_DFL  = 0.0f;

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -48,8 +48,6 @@ namespace lsp
                 typedef struct voice_t
                 {
                     uint32_t                nPhase;             // Phase shift relative to global LFO
-                    float                   nOvlDelay;          // Overlapping delay shift in samples
-                    float                   nOvlDepth;          // Overlapping depth
                     float                   fNormShift;         // Normalized shift
                     float                   fNormScale;         // Normalized scale
                     float                   fOutPhase;          // Output phase value
@@ -146,8 +144,10 @@ namespace lsp
                 float                   fWetGain;           // Wet gain
                 float                   fOldFeedGain;       // Old feedback gain
                 float                   fFeedGain;          // Feed-back gain
-                size_t                  nOldFeedDelay;      // Old feedback delay
-                size_t                  nFeedDelay;         // Feed-back delay
+                float                   fOldFeedDrive;      // Old feed-back drive
+                float                   fFeedDrive;         // Feedback drive
+                float                   fOldFeedDelay;      // Old feedback delay
+                float                   fFeedDelay;         // Feed-back delay
                 bool                    bMS;                // Mid/Side mode
                 bool                    bMono;              // Mono mode
                 bool                    bUpdateVoices;      // Need voices update flag
@@ -177,6 +177,7 @@ namespace lsp
 
                 plug::IPort            *pFeedOn;            // Enable feedback
                 plug::IPort            *pFeedGain;          // Feedback gain
+                plug::IPort            *pFeedDrive;         // Feedback drive
                 plug::IPort            *pFeedDelay;         // Feedback delay
                 plug::IPort            *pFeedPhase;         // Feedback phase
 
@@ -194,9 +195,6 @@ namespace lsp
 
             protected:
                 static inline uint32_t  phase_to_int(float phase);
-                static inline float     lerp(float o_value, float n_value, float k);
-                static inline float     qlerp(float o_value, float n_value, float k);
-                static inline int32_t   ilerp(int32_t o_value, int32_t n_value, float k);
 
             protected:
                 void                    do_destroy();

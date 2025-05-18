@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -25,7 +25,7 @@
 
 #define LSP_PLUGINS_CHORUS_VERSION_MAJOR       1
 #define LSP_PLUGINS_CHORUS_VERSION_MINOR       0
-#define LSP_PLUGINS_CHORUS_VERSION_MICRO       6
+#define LSP_PLUGINS_CHORUS_VERSION_MICRO       7
 
 #define LSP_PLUGINS_CHORUS_VERSION  \
     LSP_MODULE_VERSION( \
@@ -137,23 +137,23 @@ namespace lsp
         //-------------------------------------------------------------------------
         // Plugin metadata
 
-        #define CHORUS_LFO_MONO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
-            COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
-            COMBO("lp" id, "LFO period" label, 0, osc_periods), \
-            CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
-            CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
+        #define CHORUS_LFO_MONO(id, label, alias, max_voices, osc_functions, dfl_function, phase, delay) \
+            COMBO("lt" id, "LFO type" label, "LFO type" alias, dfl_function, osc_functions), \
+            COMBO("lp" id, "LFO period" label, "LFO period" alias, 0, osc_periods), \
+            CONTROL("lo" id, "LFO overlap" label, "LFO overlap" alias, U_PERCENT, chorus::OVERLAP), \
+            CONTROL_DFL("ld" id, "LFO delay" label, "LFO delay" alias, U_MSEC, chorus::LFO_DELAY, delay), \
+            CYC_CONTROL_DFL("lip" id, "Initial phase" label, "LFO phase" alias, U_DEG, chorus::PHASE, phase), \
+            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, "Inter-phase" alias, U_DEG, chorus::VOICE_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
-        #define CHORUS_LFO_STEREO(id, label, max_voices, osc_functions, dfl_function, phase, delay) \
-            COMBO("lt" id, "LFO type" label, dfl_function, osc_functions), \
-            COMBO("lp" id, "LFO period" label, 0, osc_periods), \
-            CONTROL("lo" id, "LFO overlap" label, U_PERCENT, chorus::OVERLAP), \
-            CONTROL_DFL("ld" id, "LFO delay" label, U_MSEC, chorus::LFO_DELAY, delay), \
-            CYC_CONTROL_DFL("lip" id, "Initial phase" label, U_DEG, chorus::PHASE, phase), \
-            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, U_DEG, chorus::VOICE_PHASE), \
-            CYC_CONTROL("lcp" id, "Inter-channel phase" label, U_DEG, chorus::CHANNEL_PHASE), \
+        #define CHORUS_LFO_STEREO(id, label, alias, max_voices, osc_functions, dfl_function, phase, delay) \
+            COMBO("lt" id, "LFO type" label, "LFO type" alias, dfl_function, osc_functions), \
+            COMBO("lp" id, "LFO period" label, "LFO period" alias, 0, osc_periods), \
+            CONTROL("lo" id, "LFO overlap" label, "LFO overlap" alias, U_PERCENT, chorus::OVERLAP), \
+            CONTROL_DFL("ld" id, "LFO delay" label, "LFO delay" alias, U_MSEC, chorus::LFO_DELAY, delay), \
+            CYC_CONTROL_DFL("lip" id, "Initial phase" label, "LFO phase" alias, U_DEG, chorus::PHASE, phase), \
+            CYC_CONTROL("lvp" id, "Inter-voice phase range" label, "Inter-phase" alias, U_DEG, chorus::VOICE_PHASE), \
+            CYC_CONTROL("lcp" id, "Inter-channel phase" label, "Chan phase" alias, U_DEG, chorus::CHANNEL_PHASE), \
             MESH("lgr" id, "LFO graph" label, (max_voices) + 1, chorus::LFO_MESH_SIZE)
 
         #define VOICE_METER_MONO(id, label) \
@@ -175,36 +175,37 @@ namespace lsp
             BYPASS,
 
             // Operating modes
-            SWITCH("sphase", "Signal phase switch", 0.0f),
-            COMBO("ovs", "Oversampling", 0, oversampling_mode),
-            COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
-            COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
+            SWITCH("sphase", "Signal phase switch", "Phase", 0.0f),
+            COMBO("ovs", "Oversampling", "Oversampling", 0, oversampling_mode),
+            COMBO("hpm", "High-pass filter mode", "HPF mode", 0, filter_slopes),
+            LOG_CONTROL("hpf", "High-pass filter frequency", "HPF freq", U_HZ, chorus::HPF),
+            COMBO("lpm", "Low-pass filter mode", "LPF mode", 0, filter_slopes),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", "LPF freq", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
-            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
-            CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
-            CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
-            CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
-            SWITCH("sync", "Tempo sync", 0.0f),
-            COMBO("time", "Time computing method", 0, rate_type),
-            TRIGGER("reset", "Reset phase to initial value"),
+            LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
+            CONTROL("frac", "Time fraction", "Frac", U_BAR, chorus::FRACTION),
+            CONTROL("denom", "Time fraction denominator", "Denom", U_BAR, chorus::DENOMINATOR),
+            CONTROL("tempo", "Tempo", "Tempo", U_BPM, chorus::TEMPO),
+            SWITCH("sync", "Tempo sync", "Sync tempo", 0.0f),
+            COMBO("time", "Time computing method", "Method", 0, rate_type),
+            TRIGGER("reset", "Reset phase to initial value", "Reset"),
 
             // LFO settings
-            COMBO("voices", "Number of voices", 2, voices_list),
-            CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
-            COMBO("xtype", "Crossfade Type", 1, crossfade_type),
-            SWITCH("lfo2", "Enable second LFO", 0.0f),
-            CHORUS_LFO_MONO("_1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
-            CHORUS_LFO_MONO("_2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
+            COMBO("voices", "Number of voices", "Voices", 2, voices_list),
+            CONTROL("depth", "Depth", "Depth", U_MSEC, chorus::DEPTH),
+            CONTROL("xfade", "Crossfade", "Xfade", U_PERCENT, chorus::CROSSFADE),
+            COMBO("xtype", "Crossfade Type", "Xfade type", 1, crossfade_type),
+            SWITCH("lfo2", "Enable second LFO", "Second LFO on", 0.0f),
+            CHORUS_LFO_MONO("_1", " 1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
+            CHORUS_LFO_MONO("_2", " 2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
 
             // Feedback chain
-            SWITCH("fb_on", "Feedback on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
-            SWITCH("fphase", "Feedback phase switch", 0.0f),
+            SWITCH("fb_on", "Feedback on", "Feed on", 0),
+            CONTROL("fgain", "Feedback gain", "Feed gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", "Feed drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
+            CONTROL("fdelay", "Feedback delay", "Feed delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            SWITCH("fphase", "Feedback phase switch", "Feed phase", 0.0f),
 
             // Loudness control
             IN_GAIN,
@@ -247,38 +248,39 @@ namespace lsp
             BYPASS,
 
             // Operating modes
-            SWITCH("mono", "Test for mono compatibility", 0),
-            SWITCH("ms", "Mid/Side mode switch", 0.0f),
-            SWITCH("sphase", "Signal phase switch", 0.0f),
-            COMBO("ovs", "Oversampling", 0, oversampling_mode),
-            COMBO("hpm", "High-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("hpf", "High-pass filter frequency", U_HZ, chorus::HPF),
-            COMBO("lpm", "Low-pass filter mode", 0, filter_slopes),
-            LOG_CONTROL("lpf", "Low-pass filter frequency", U_HZ, chorus::LPF),
+            SWITCH("mono", "Test for mono compatibility", "Mono", 0),
+            SWITCH("ms", "Mid/Side mode switch", "M/S switch", 0.0f),
+            SWITCH("sphase", "Signal phase switch", "Phase", 0.0f),
+            COMBO("ovs", "Oversampling", "Oversampling", 0, oversampling_mode),
+            COMBO("hpm", "High-pass filter mode", "HPF mode", 0, filter_slopes),
+            LOG_CONTROL("hpf", "High-pass filter frequency", "HPF freq", U_HZ, chorus::HPF),
+            COMBO("lpm", "Low-pass filter mode", "LPF mode", 0, filter_slopes),
+            LOG_CONTROL("lpf", "Low-pass filter frequency", "LPF freq", U_HZ, chorus::LPF),
 
             // Tempo/rate controls
-            LOG_CONTROL("rate", "Rate", U_HZ, chorus::RATE),
-            CONTROL("frac", "Time fraction", U_BAR, chorus::FRACTION),
-            CONTROL("denom", "Time fraction denominator", U_BAR, chorus::DENOMINATOR),
-            CONTROL("tempo", "Tempo", U_BPM, chorus::TEMPO),
-            SWITCH("sync", "Tempo sync", 0.0f),
-            COMBO("time", "Time computing method", 0, rate_type),
-            TRIGGER("reset", "Reset phase to initial"),
+            LOG_CONTROL("rate", "Rate", "Rate", U_HZ, chorus::RATE),
+            CONTROL("frac", "Time fraction", "Frac", U_BAR, chorus::FRACTION),
+            CONTROL("denom", "Time fraction denominator", "Denom", U_BAR, chorus::DENOMINATOR),
+            CONTROL("tempo", "Tempo", "Tempo", U_BPM, chorus::TEMPO),
+            SWITCH("sync", "Tempo sync", "Sync tempo", 0.0f),
+            COMBO("time", "Time computing method", "Method", 0, rate_type),
+            TRIGGER("reset", "Reset phase to initial", "Reset"),
 
             // LFO settings
-            COMBO("voices", "Number of voices", 2, voices_list),
-            CONTROL("depth", "Depth", U_MSEC, chorus::DEPTH),
-            CONTROL("xfade", "Crossfade", U_PERCENT, chorus::CROSSFADE),
-            COMBO("xtype", "Crossfade Type", 1, crossfade_type),
-            SWITCH("lfo2", "Enable second LFO", 0.0f),
-            CHORUS_LFO_STEREO("_1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
-            CHORUS_LFO_STEREO("_2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
+            COMBO("voices", "Number of voices", "Voices", 2, voices_list),
+            CONTROL("depth", "Depth", "Depth", U_MSEC, chorus::DEPTH),
+            CONTROL("xfade", "Crossfade", "Xfade", U_PERCENT, chorus::CROSSFADE),
+            COMBO("xtype", "Crossfade Type", "Xfade type", 1, crossfade_type),
+            SWITCH("lfo2", "Enable second LFO", "Second LFO on", 0.0f),
+            CHORUS_LFO_STEREO("_1", " 1", " 1", chorus::VOICES_MAX, osc1_functions, 1, 0.0f, 5.0f),
+            CHORUS_LFO_STEREO("_2", " 2", " 2", chorus::VOICES_MAX/2, osc2_functions, 0, 180.0f, 15.0f),
 
             // Feedback chain
-            SWITCH("fb_on", "Feedback on", 0),
-            CONTROL("fgain", "Feedback gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
-            CONTROL("fdelay", "Feedback delay", U_MSEC, chorus::FEEDBACK_DELAY),
-            SWITCH("fphase", "Feedback phase switch", 0.0f),
+            SWITCH("fb_on", "Feedback on", "Feed on", 0),
+            CONTROL("fgain", "Feedback gain", "Feed gain", U_GAIN_AMP, chorus::FEEDBACK_GAIN),
+            CONTROL("fdrive", "Feedback drive", "Feed drive", U_GAIN_AMP, chorus::FEEDBACK_DRIVE),
+            CONTROL("fdelay", "Feedback delay", "Feed delay", U_MSEC, chorus::FEEDBACK_DELAY),
+            SWITCH("fphase", "Feedback phase switch", "Feed phase", 0.0f),
 
             // Loudness control
             IN_GAIN,
