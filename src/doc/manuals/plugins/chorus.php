@@ -31,7 +31,7 @@ $m      =   ($PAGE == 'chorus_mono') ? 'm' : 's';
     	<li><b>Constant power</b> - constant power crossfade</li>
     </ul>
     <li><b>Voices</b> - the overall number of voices<?php if ($m == 's') { ?> for each audio channel in the stereo pair<?php } ?>.
-    <li><b>Depth</b> - the difference betweeen maximum delay and minimum delay for LFOs.
+    <li><b>Depth</b> - the difference between maximum delay and minimum delay for LFOs.
 	<li><b>Oversampling</b> - oversampling mode.</li>
 	<ul>
 		<li><b>None</b> - no oversampling applied.</li>
