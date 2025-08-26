@@ -31,7 +31,7 @@ $m      =   ($PAGE == 'chorus_mono') ? 'm' : 's';
     	<li><b>Constant power</b> - constant power crossfade</li>
     </ul>
     <li><b>Voices</b> - the overall number of voices<?php if ($m == 's') { ?> for each audio channel in the stereo pair<?php } ?>.
-    <li><b>Depth</b> - the difference betweeen maximum delay and minimum delay for LFOs.
+    <li><b>Depth</b> - the difference between maximum delay and minimum delay for LFOs.
 	<li><b>Oversampling</b> - oversampling mode.</li>
 	<ul>
 		<li><b>None</b> - no oversampling applied.</li>
@@ -57,12 +57,12 @@ $m      =   ($PAGE == 'chorus_mono') ? 'm' : 's';
 		The oscillator can work in three modes: full period, the first half of the period (raising) and the second half of the period (falling).
 		When using half period mode, then additional crossfade is performed to make the smooth transform of the sound.
 	</li>
-	<li><b>Overlap</b> - the overlap amount between oscillator voices.
-	<li><b>Delay</b> - the minimum delay introduced by the oscillator. 
-	<li><b>Phase</b> - the initial phase of the oscillator.
-	<li><b>Phase range</b> - the phase range used to evenly assign the phase for each voice.
+	<li><b>Overlap</b> - the overlap amount between oscillator voices.</li>
+	<li><b>Delay</b> - the minimum delay introduced by the oscillator.</li> 
+	<li><b>Phase</b> - the initial phase of the oscillator.</li>
+	<li><b>Phase range</b> - the phase range used to evenly assign the phase for each voice.</li>
 	<?php if ($m == 's') { ?>
-	<li><b>Difference</b> - the phase difference between voices of the left and right channels.
+	<li><b>Difference</b> - the phase difference between voices of the left and right channels.</li>
 	<?php } ?>.
 </ul>
 
