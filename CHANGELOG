@@ -3,7 +3,7 @@
 *******************************************************************************
 
 === 1.0.10 ===
-
+* Fixed linker warning for Windows.
 
 === 1.0.9 ===
 * Updated build scripts and dependencies.
