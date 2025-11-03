@@ -39,6 +39,16 @@ namespace lsp
         static constexpr uint32_t   PHASE_MASK              = PHASE_MAX - 1;
         static constexpr float      PHASE_COEFF             = 1.0f / float(PHASE_MAX);
 
+        static float do_lerp(float a, float b, float k)
+        {
+            return lsp::dspu::lerp(a, b, k);
+        }
+
+        static float do_qlerp(float a, float b, float k)
+        {
+            return lsp::dspu::qlerp(a, b, k);
+        }
+
         //---------------------------------------------------------------------
         // Plugin factory
         static const meta::plugin_t *plugins[] =
@@ -144,7 +154,7 @@ namespace lsp
             nVoices             = 0;
             nCrossfade          = 0;
             fCrossfade          = PHASE_COEFF;
-            pCrossfadeFunc      = dspu::qlerp;
+            pCrossfadeFunc      = do_qlerp;
             fDepth              = 0.0f;
             nOldDepth           = 0;
             nDepth              = 0;
@@ -553,7 +563,7 @@ namespace lsp
             fFeedDrive              = (feed_phase) ? -feed_drive : feed_drive;
             nCrossfade              = float(PHASE_MAX) * crossfade * 2;
             fCrossfade              = PHASE_COEFF * (1.0f - crossfade);
-            pCrossfadeFunc          = (int(pCrossfadeType->value()) == 0) ? dspu::lerp : dspu::qlerp;
+            pCrossfadeFunc          = (int(pCrossfadeType->value()) == 0) ? do_lerp : do_qlerp;
 
             // LFO setup
             const size_t n_lfo      = (pLfo2Enable->value() >= 0.5f) ? 2 : 1;
