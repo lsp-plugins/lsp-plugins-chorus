@@ -63,7 +63,7 @@ $m      =   ($PAGE == 'chorus_mono') ? 'm' : 's';
 	<li><b>Phase range</b> - the phase range used to evenly assign the phase for each voice.</li>
 	<?php if ($m == 's') { ?>
 	<li><b>Difference</b> - the phase difference between voices of the left and right channels.</li>
-	<?php } ?>.
+	<?php } ?>
 </ul>
 
 
