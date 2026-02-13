@@ -354,7 +354,7 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_mono_ports,
-            "effects/chorus.xml",
+            "plugins/effects/chorus.xml",
             "effects/chorus",
             mono_plugin_port_groups,
             &chorus_bundle
@@ -385,7 +385,7 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_stereo_ports,
-            "effects/chorus.xml",
+            "plugins/effects/chorus.xml",
             "effects/chorus",
             stereo_plugin_port_groups,
             &chorus_bundle
