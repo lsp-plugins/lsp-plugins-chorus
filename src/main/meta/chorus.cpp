@@ -357,7 +357,8 @@ namespace lsp
             "plugins/effects/chorus.xml",
             "effects/chorus",
             mono_plugin_port_groups,
-            &chorus_bundle
+            &chorus_bundle,
+            2
         };
         LSP_REGISTER_METADATA(chorus_mono);
 
@@ -388,12 +389,10 @@ namespace lsp
             "plugins/effects/chorus.xml",
             "effects/chorus",
             stereo_plugin_port_groups,
-            &chorus_bundle
+            &chorus_bundle,
+            1
         };
         LSP_REGISTER_METADATA(chorus_stereo);
 
     } /* namespace meta */
 } /* namespace lsp */
-
-
-

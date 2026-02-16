@@ -1,11 +1,10 @@
 {
 	"chorus": {
 		"description": "This plugin allows to simulate the chorus effect using\ntwo low frequency oscillators.",
-		"launcher": {
-			"chorus_mono": "Mono",
-			"chorus_stereo": "Stereo"
-		},
 		"name": "Chorus"
+	},
+	"launcher": {
+		"chorus_mono": "Mono",
+		"chorus_stereo": "Stereo"
 	}
 }
-
