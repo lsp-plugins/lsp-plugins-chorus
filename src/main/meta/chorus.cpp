@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2026 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2026 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-chorus
  * Created on: 23 мар 2024 г.
@@ -20,12 +20,13 @@
  */
 
 #include <lsp-plug.in/plug-fw/meta/ports.h>
+#include <lsp-plug.in/plug-fw/meta/registry.h>
 #include <lsp-plug.in/shared/meta/developers.h>
 #include <private/meta/chorus.h>
 
 #define LSP_PLUGINS_CHORUS_VERSION_MAJOR       1
 #define LSP_PLUGINS_CHORUS_VERSION_MINOR       0
-#define LSP_PLUGINS_CHORUS_VERSION_MICRO       11
+#define LSP_PLUGINS_CHORUS_VERSION_MICRO       12
 
 #define LSP_PLUGINS_CHORUS_VERSION  \
     LSP_MODULE_VERSION( \
@@ -353,11 +354,13 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_mono_ports,
-            "effects/chorus.xml",
+            "plugins/effects/chorus.xml",
             "effects/chorus",
             mono_plugin_port_groups,
-            &chorus_bundle
+            &chorus_bundle,
+            2
         };
+        LSP_REGISTER_METADATA(chorus_mono);
 
         const plugin_t chorus_stereo =
         {
@@ -383,13 +386,13 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             chorus_stereo_ports,
-            "effects/chorus.xml",
+            "plugins/effects/chorus.xml",
             "effects/chorus",
             stereo_plugin_port_groups,
-            &chorus_bundle
+            &chorus_bundle,
+            1
         };
+        LSP_REGISTER_METADATA(chorus_stereo);
+
     } /* namespace meta */
 } /* namespace lsp */
-
-
-
